@@ -1,0 +1,47 @@
+div.reservations {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/bookatable.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.menu {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/menu.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.orders {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/bill.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ h1 {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+  }
+  
+  
+  
+  
+  
+  
+  
+
+ 

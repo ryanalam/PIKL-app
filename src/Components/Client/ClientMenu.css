@@ -1,0 +1,47 @@
+div.dineinpicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/dinein.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.deliverypicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/delivery.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.bookatablepicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/bookatable.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ h1 {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+  }
+  
+  
+  
+  
+  
+  
+  
+
+ 

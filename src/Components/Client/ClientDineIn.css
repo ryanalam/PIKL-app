@@ -1,0 +1,58 @@
+div.menupicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/menu.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.billpicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/bill.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.valetpicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/valet.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ div.feedbackpicture {
+    width:400px; /*width of your image*/
+    height:150px; /*height of your image*/
+    background-image:url('../../Pictures/feedback.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+ }
+
+ h1 {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+  }
+  
+  
+  
+  
+  
+  
+  
+
+ 
