@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify, request,make_response, url_for
+from flask import Flask, jsonify, request,make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from itsdangerous import SignatureExpired,URLSafeTimedSerializer
 
@@ -499,6 +499,16 @@ def new_reservation_app():
 
 
 
+def confirm_token(token):
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=3600)
+    except SignatureExpired:
+        return False
+    return email
+
+
+
+
 
 
 @app.route('/customer_signup', methods=['POST'])
@@ -516,44 +526,33 @@ def customer_signup():
       return jsonify({'message': 'Username already exists'}), 400
     
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    
-
     token = s.dumps(email, salt="email-confirm")
     msg = Message("Confirm Email", sender="piklauth@gmail.com", recipients=[email])
     link = url_for("confirm_email", token=token, _external=True)
     msg.body = "Your link to confirm your account is {}".format(link)
     mail.send(msg)
 
-    dict[token] = False
+    helper(token, username, hashed_password, name, email, phone)
 
-    helper(token, username, password, name, email, phone)
-
-    customer = Customer(username=username, password=password, name=name, email=email, phone=phone)
-
-    return jsonify(customer_schema.dump(customer))
+    return jsonify({'message': 'Confirmation email sent. Please check your inbox.'}), 200
 
 
 def helper(token, username, password, name, email, phone):
-    while dict[token] != True:
-        None
-
+    confirmed = False
+    while not confirmed:
+        confirmed = confirm_token(token)
     customer = Customer(username=username, password=password, name=name, email=email, phone=phone)
     db.session.add(customer)
     db.session.commit()
-    return jsonify(customer_schema.dump(customer))
 
 
 @app.route("/confirm_email/<token>")
 def confirm_email(token):
-    try:
-        email = s.loads(token, salt="email-confirm", max_age=3600)
-    except SignatureExpired:
-        return "<h1>The token is expired!</h1>"
-
-    dict[token] = True
-    return "<h1>Account confirmed</h1>" 
-
-
+    confirmed = confirm_token(token)
+    if confirmed:
+        return redirect("http://localhost:3000/clientmenu")
+    else:
+        return "<h1>The token is expired or invalid!</h1>"
 
 
 
