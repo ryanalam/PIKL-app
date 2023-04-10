@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
 
-var SERVER_URL = "http://127.0.0.1:5000";
+<<<<<<< HEAD
+var SERVER_URL = "http://127.0.0.1:3500";
+=======
+>>>>>>> aca4ea7d81e195d7dabcd9f804f960dcd05c5152
 
 function ClientLogin() {
   let [loginStatus, setLoginStatus] = useState(false);
@@ -48,11 +51,27 @@ function ClientLogin() {
       setShowErrorMessage(true);
     }
   }
+// const handleLogin = async () => {
+//     console.log('logging in with', username, password);
+//     const response = await login(username, password);
+//     console.log('response', response);
+//     if (response.access_token) {
+//       setLoginStatus(true);
+//       setShowSuccessMessage(true);
+//       setShowErrorMessage(false);
+//       navigate("/clientmenu", { state: { username: username } });
+//     } else {
+//       setShowSuccessMessage(false);
+//       setShowErrorMessage(true);
+//     }
+//   }
+
+
   
   useEffect(() => {
     if (loginStatus) {
       setTimeout(() => {
-        navigate("/clientmenu");
+        navigate("/clientmenu", { state: { username: username } });
       }, 2000);
     }
   }, [loginStatus, navigate]);
