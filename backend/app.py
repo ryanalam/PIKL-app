@@ -29,9 +29,6 @@ CORS(app)
 ma = Marshmallow(app)
 
 
-
-
-
 # Set up SQLAlchemy
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

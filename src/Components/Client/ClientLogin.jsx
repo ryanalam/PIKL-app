@@ -4,10 +4,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
 
-<<<<<<< HEAD
 var SERVER_URL = "http://127.0.0.1:3500";
-=======
->>>>>>> aca4ea7d81e195d7dabcd9f804f960dcd05c5152
 
 function ClientLogin() {
   let [loginStatus, setLoginStatus] = useState(false);
