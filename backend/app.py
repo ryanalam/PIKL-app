@@ -1,4 +1,4 @@
-
+from db_config import DB_CONFIG
 from flask import Flask, jsonify, request,make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from itsdangerous import SignatureExpired,URLSafeTimedSerializer
@@ -19,7 +19,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
