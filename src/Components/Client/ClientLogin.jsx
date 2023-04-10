@@ -48,23 +48,8 @@ function ClientLogin() {
       setShowErrorMessage(true);
     }
   }
-// const handleLogin = async () => {
-//     console.log('logging in with', username, password);
-//     const response = await login(username, password);
-//     console.log('response', response);
-//     if (response.access_token) {
-//       setLoginStatus(true);
-//       setShowSuccessMessage(true);
-//       setShowErrorMessage(false);
-//       navigate("/clientmenu", { state: { username: username } });
-//     } else {
-//       setShowSuccessMessage(false);
-//       setShowErrorMessage(true);
-//     }
-//   }
 
 
-  
   useEffect(() => {
     if (loginStatus) {
       setTimeout(() => {
