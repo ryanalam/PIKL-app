@@ -11,7 +11,7 @@ function ClientLogin() {
   let [password, setPassword] = useState('');
   let [showSuccessMessage, setShowSuccessMessage] = useState(false);
   let [showErrorMessage, setShowErrorMessage] = useState(false);
-  var [userToken, setUserToken] = useState(getUserToken() || '');
+  let [userToken, setUserToken] = useState(getUserToken() || '');
   const navigate = useNavigate();
 
   function login(username, password) {
@@ -31,6 +31,8 @@ function ClientLogin() {
     .then((body) => {
       setUserToken(body.access_token);
       saveUserToken(body.access_token); // save token in local storage
+      console.log(userToken);
+      return body;
     });
   }
   
@@ -49,6 +51,7 @@ function ClientLogin() {
   }
 
 
+  
   useEffect(() => {
     if (loginStatus) {
       setTimeout(() => {
