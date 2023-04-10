@@ -477,6 +477,8 @@ def new_reservation_app():
    
         # Check if table is available during the reservation time
     table = Tables.query.get(table_id)
+    if table.status:
+        return jsonify({'message': 'Table is not available.'}), 400
 
     overlapping_reservations = Reservation.query.filter(
         Reservation.table_id == table_id,
