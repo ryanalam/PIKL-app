@@ -49,7 +49,6 @@ function ClientLogin() {
   }
 
 
-  
   useEffect(() => {
     if (loginStatus) {
       setTimeout(() => {
