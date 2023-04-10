@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
+import { getUserToken,saveUserToken} from "../../LocalStorage";
 
 var SERVER_URL = "http://127.0.0.1:5000";
 
@@ -10,6 +11,7 @@ function ClientLogin() {
   let [password, setPassword] = useState('');
   let [showSuccessMessage, setShowSuccessMessage] = useState(false);
   let [showErrorMessage, setShowErrorMessage] = useState(false);
+  var [userToken, setUserToken] = useState(getUserToken() || '');
   const navigate = useNavigate();
 
   function login(username, password) {
@@ -24,23 +26,22 @@ function ClientLogin() {
       }),
     })
     .then((response) => {
-      console.log('response', response);
       return response.json()
     })
     .then((body) => {
-      console.log('body', body);
-      return body;
+      setUserToken(body.access_token);
+      saveUserToken(body.access_token); // save token in local storage
     });
   }
   
   const handleLogin = async () => {
     console.log('logging in with', username, password);
     const response = await login(username, password);
-    console.log('response', response);
     if (response.access_token) {
       setLoginStatus(true);
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
+      
     } else {
       setShowSuccessMessage(false);
       setShowErrorMessage(true);

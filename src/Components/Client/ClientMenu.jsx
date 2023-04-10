@@ -4,11 +4,12 @@ import './ClientMenu.css';
 import { useNavigate } from 'react-router-dom';
 
 
-function ClientLogin() {
+function ClientMenu() {
     const navigate = useNavigate();
 
     return (
         <>
+
             <div onClick={() => { navigate("/clientdinein") }} class="container dineinpicture">
                 <center><h1>Dine-In</h1></center>
             </div>
@@ -36,4 +37,4 @@ function ClientLogin() {
         </>
     )
 }
-export default ClientLogin;
+export default ClientMenu;
