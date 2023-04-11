@@ -3,6 +3,7 @@
 /.pnp
 backend/venv
 .pnp.js
+backend/db_config.py
 
 # testing
 /coverage

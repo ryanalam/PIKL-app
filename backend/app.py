@@ -1,4 +1,4 @@
-
+from db_config import DB_CONFIG
 from flask import Flask, jsonify, request,make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from itsdangerous import SignatureExpired,URLSafeTimedSerializer
@@ -19,7 +19,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -27,9 +27,6 @@ jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 CORS(app)
 ma = Marshmallow(app)
-
-
-
 
 
 # Set up SQLAlchemy
@@ -480,6 +477,8 @@ def new_reservation_app():
    
         # Check if table is available during the reservation time
     table = Tables.query.get(table_id)
+    if table.status:
+        return jsonify({'message': 'Table is not available.'}), 400
 
     overlapping_reservations = Reservation.query.filter(
         Reservation.table_id == table_id,
