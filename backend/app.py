@@ -196,8 +196,8 @@ app.app_context().push()
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
-app.config["MAIL_USERNAME"] = "piklauth@gmail.com"
-app.config["MAIL_PASSWORD"] = "mloibhmrsuziipxr"
+app.config["MAIL_USERNAME"] = "piklalamoutrabboud@gmail.com"
+app.config["MAIL_PASSWORD"] = "tkzdczxebecgqbbz"
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 mail = Mail(app)
@@ -477,8 +477,8 @@ def new_reservation_app():
    
         # Check if table is available during the reservation time
     table = Tables.query.get(table_id)
-    if table.status:
-        return jsonify({'message': 'Table is not available.'}), 400
+    # if table.status:
+    #     return jsonify({'message': 'Table is not available.'}), 400
 
     overlapping_reservations = Reservation.query.filter(
         Reservation.table_id == table_id,
@@ -494,20 +494,7 @@ def new_reservation_app():
     new_reservation = Reservation(customer_id=reservation.customer_id, table_id=table_id,number_of_people=number_of_people, start_time=start_time, end_time=end_time, customer_name=reservation.customer_name)
     db.session.add(new_reservation)
     db.session.commit()
-    return jsonify({'message': 'Reservation created successfully'}), 201
-
-
-
-def confirm_token(token):
-    try:
-        email = s.loads(token, salt="email-confirm", max_age=3600)
-    except SignatureExpired:
-        return False
-    return email
-
-
-
-
+    return jsonify({'message': 'Reservation created successfully.'}), 201
 
 
 @app.route('/customer_signup', methods=['POST'])
@@ -531,15 +518,36 @@ def customer_signup():
     msg.body = "Your link to confirm your account is {}".format(link)
     mail.send(msg)
 
+    dict[token] = False
+
     helper(token, username, hashed_password, name, email, phone)
 
-    return jsonify({'message': 'Confirmation email sent. Please check your inbox.'}), 200
+    customer = Customer.query.filter_by(username=username).first()
+    access_token = create_access_token(identity=customer.id)
+    
+    return jsonify({'access_token': access_token}), 200
+
+
+
+    # return jsonify({'message': 'Account successfully created.'}), 200
+
+
+# def confirm_token(token):
+#     try:
+#         email = s.loads(token, salt="email-confirm", max_age=3600)
+#     except SignatureExpired:
+#         return False
+#     return email
 
 
 def helper(token, username, password, name, email, phone):
-    confirmed = False
-    while not confirmed:
-        confirmed = confirm_token(token)
+    print("1")
+    # confirmed = False
+    # while not confirmed:
+    #     confirmed = confirm_token(token)
+    while dict[token] != True:
+        None
+    print("2")
     customer = Customer(username=username, password=password, name=name, email=email, phone=phone)
     db.session.add(customer)
     db.session.commit()
@@ -547,13 +555,28 @@ def helper(token, username, password, name, email, phone):
 
 @app.route("/confirm_email/<token>")
 def confirm_email(token):
-    confirmed = confirm_token(token)
-    if confirmed:
-        return redirect("http://localhost:3000/clientmenu")
-    else:
-        return "<h1>The token is expired or invalid!</h1>"
+    # confirmed = confirm_token(token)
+    # if confirmed:
+    #     helper2()
+    #     return jsonify({'access_token': token}), 200
+    # else:
+    #     return "<h1>The token is expired or invalid!</h1>"
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=3600)
+    except SignatureExpired:
+        return "<h1>The token is expired or invalid.</h1>"
 
+    dict[token] = True
+    # helper2()
+    # return jsonify({'access_token': token}), 200
+    response = make_response(jsonify({'access_token': token}))
+    response.headers['Location'] = "http://localhost:3000/clientmenu"
+    response.status_code = 302
+    return response
+    
 
+def helper2():
+    return redirect("http://localhost:3000/clientmenu")
 
 from stock_management import stock_management
 from order import order
