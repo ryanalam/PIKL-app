@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
 import { getUserToken,saveUserToken} from "../../LocalStorage";
 
-var SERVER_URL = "http://127.0.0.1:5000";
+var SERVER_URL = "http://127.0.0.1:3500";
 
 function ClientLogin() {
   let [loginStatus, setLoginStatus] = useState(false);
@@ -43,22 +43,28 @@ function ClientLogin() {
       setLoginStatus(true);
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
+      setTimeout(() => {
+        // window.location.reload(false);
+        navigate("/clientmenu", { state: { userToken: username } });
+      }, 2000);
       
     } else {
       setShowSuccessMessage(false);
       setShowErrorMessage(true);
+      setLoginStatus(false);
     }
   }
 
 
   
-  useEffect(() => {
-    if (loginStatus) {
-      setTimeout(() => {
-        navigate("/clientmenu", { state: { username: username } });
-      }, 2000);
-    }
-  }, [loginStatus, navigate]);
+  // useEffect(() => {
+  //   if (loginStatus) {
+  //     setTimeout(() => {
+  //       // window.location.reload(false);
+  //       navigate("/clientmenu", { state: { username: username } });
+  //     }, 2000);
+  //   }
+  // }, [loginStatus, navigate]);
 
   return (
     <div className="container-sm">
