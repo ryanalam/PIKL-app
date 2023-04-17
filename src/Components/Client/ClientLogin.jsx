@@ -43,22 +43,28 @@ function ClientLogin() {
       setLoginStatus(true);
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
+      setTimeout(() => {
+        // window.location.reload(false);
+        navigate("/clientmenu", { state: { userToken: username } });
+      }, 2000);
       
     } else {
       setShowSuccessMessage(false);
       setShowErrorMessage(true);
+      setLoginStatus(false);
     }
   }
 
 
   
-  useEffect(() => {
-    if (loginStatus) {
-      setTimeout(() => {
-        navigate("/clientmenu", { state: { username: username } });
-      }, 2000);
-    }
-  }, [loginStatus, navigate]);
+  // useEffect(() => {
+  //   if (loginStatus) {
+  //     setTimeout(() => {
+  //       // window.location.reload(false);
+  //       navigate("/clientmenu", { state: { username: username } });
+  //     }, 2000);
+  //   }
+  // }, [loginStatus, navigate]);
 
   return (
     <div className="container-sm">
