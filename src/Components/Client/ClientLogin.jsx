@@ -40,12 +40,15 @@ function ClientLogin() {
     console.log('logging in with', username, password);
     const response = await login(username, password);
     if (response.access_token) {
+      
+      console.log(username);
       setLoginStatus(true);
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
       setTimeout(() => {
         // window.location.reload(false);
-        navigate("/clientmenu", { state: { userToken: username } });
+        // navigate("/clientmenu", { state: { username: username } });
+        navigate("/clientmenu")
       }, 2000);
       
     } else {
@@ -56,15 +59,6 @@ function ClientLogin() {
   }
 
 
-  
-  // useEffect(() => {
-  //   if (loginStatus) {
-  //     setTimeout(() => {
-  //       // window.location.reload(false);
-  //       navigate("/clientmenu", { state: { username: username } });
-  //     }, 2000);
-  //   }
-  // }, [loginStatus, navigate]);
 
   return (
     <div className="container-sm">

@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { clearUserToken, getUserToken, saveUserToken } from '../../LocalStorage';
+import { clearUserToken, getUserToken, saveUserToken, getUsername } from '../../LocalStorage';
 
 const Navbar = ({ onUserTokenChange }) => {
-  const location = useLocation();
+
   const navigate = useNavigate();
   const [userToken, setUserToken] = useState(getUserToken());
-  const username = location.state && location.state.username;
+
+
+
+
+
 
   function logout() {
     setUserToken(null);
     saveUserToken(null);
     clearUserToken();
     window.location.reload(false);
-    navigate('/ClientLogin')
+    navigate('/ClientLogin');
   }
 
   useEffect(() => {
     onUserTokenChange();
   }, [userToken]);
 
+
+
   useEffect(() => {
     function handleStorageEvent() {
       setUserToken(getUserToken());
+      console.log(getUserToken());
+
     }
 
     window.addEventListener('storage', handleStorageEvent);
@@ -40,10 +48,12 @@ const Navbar = ({ onUserTokenChange }) => {
           <div className="container-fluid">
             <Button variant="outline-secondary" onClick={() => navigate(-1)}>Back</Button>
             <span className="navbar-text">
+ 
+        
+
               {userToken != null && (
-                <button class="btn btn-danger" onClick={logout}>Logout</button>
-              )
-              }
+                <button className="btn btn-danger" onClick={logout}>Logout</button>
+              )}
             </span>
           </div>
         </nav>

@@ -29,16 +29,19 @@ import KitchenQueue from './Components/Kitchen/KitchenQueue';
 import StaffInsights from './Components/Staff/StaffInsights';
 import StaffMenu from './Components/Staff/StaffMenu';
 import StaffStock from './Components/Staff/StaffStock';
-import { getUserToken } from './LocalStorage';
+import {  getUserToken } from './LocalStorage';
 import Protected from './Protected';
 
 
 function App() {
   const [userToken, setUserToken] = useState(getUserToken());
 
+
   function handleUserTokenChange() {
     setUserToken(getUserToken());
   }
+
+
 
   return (
 
@@ -47,7 +50,9 @@ function App() {
     <div className="App">
       <header>
         <LogoHeader />
-        <Navbar onUserTokenChange={handleUserTokenChange}/>
+        <Navbar onUserTokenChange={handleUserTokenChange}
+                
+        />
       </header>
     
         <Routes> 
