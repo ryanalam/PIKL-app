@@ -55,10 +55,10 @@ function App() {
           <Route path='/clientlogin' element={<ClientLogin/>}/>
           <Route path='/clientregister' element={<ClientRegister />} />
           <Route path='/clientmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientMenu /></Protected>} />
-          <Route path='/clientdinein' element={<ClientDineIn />} />
-          <Route path='/clientdelivery' element={<ClientDelivery />} />
-          <Route path='/clientbookatable' element={<ClientBookATable />} />
-          <Route path='/clientrequestcar' element={<ClientRequestCar />} />
+          <Route path='/clientdinein' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDineIn /></Protected>} />
+          <Route path='/clientdelivery' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDelivery /></Protected>} />
+          <Route path='/clientbookatable' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientBookATable /></Protected>} />
+          <Route path='/clientrequestcar' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestCar /></Protected>} />
 
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>

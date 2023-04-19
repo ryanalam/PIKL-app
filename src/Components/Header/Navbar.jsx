@@ -40,8 +40,12 @@ const Navbar = ({ onUserTokenChange }) => {
           <div className="container-fluid">
             <Button variant="outline-secondary" onClick={() => navigate(-1)}>Back</Button>
             <span className="navbar-text">
+            {userToken != null && (
+                <p>{username && ` ${username}`}</p>
+              )
+              }
               {userToken != null && (
-                <button class="btn btn-danger" onClick={logout}>Logout</button>
+                <button class="btn btn-danger" onClick={logout}>Logout </button>
               )
               }
             </span>
