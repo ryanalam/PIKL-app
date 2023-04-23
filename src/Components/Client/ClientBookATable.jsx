@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getUserToken } from '../../LocalStorage';
 import { Navigate } from 'react-router-dom';
 
-var SERVER_URL = "http://127.0.0.1:5000";
+var SERVER_URL = "http://127.0.0.1:3500";
 
 function ClientBookATable() {
 

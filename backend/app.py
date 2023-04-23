@@ -580,8 +580,8 @@ def helper2():
     return redirect("http://localhost:3000/clientmenu")
 
 
-@app.route('/request_bill', methods=['GET'])
-def request_bill():
+# @app.route('/request_bill', methods=['GET'])
+# def request_bill():
     
 
 from stock_management import stock_management
