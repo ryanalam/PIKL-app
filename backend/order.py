@@ -4,6 +4,7 @@ from app import *
 order = Blueprint('order', __name__)
 
 
+
 @app.route('/orders', methods=['GET'])
 def get_orders():
     orders = Orders.query.all()
@@ -139,6 +140,133 @@ def edit_order(order_id):
     
     return jsonify({'message': 'Order updated successfully'}), 200
 
+@app.route('/get_menu', methods=['GET'])
+def get_menu():
+    menu = Item.query.all()
+    menu_list = []
+    for item in menu:
+        item_data = {
+            'id': item.id,
+            'name': item.name,
+            'price': item.price,
+            'description': item.description,
+            'calories': item.calories,
+            'category': item.category,
+            'image_path': item.image_path
+        }
+        menu_list.append(item_data)
+    return jsonify(menu_list)
+
+
+# @app.route('/get_menu_filter', methods=['GET'])
+# def get_menu_filter():
+#     vegan=request.json['vegan']
+#     vegetarian=request.json['vegetarian']
+#     gluten=request.json['gluten']
+#     dairy=request.json['dairy']
+#     spicy=request.json['spicy']
+#     lowcal=request.json['lowcal']
+
+#     filters = {'gluten': False, 'spicy': False, 'vegetarian': False, 'dairy': False, 'lowcal': False}
+
+
+#     if gluten:
+#         filters['gluten'] = True
+
+#     if spicy:
+#         filters['spicy'] = True
+
+#     if vegetarian:
+#         filters['vegetarian'] = True
+
+#     if dairy:
+#         filters['dairy'] = True
+
+#     if lowcal:
+#         filters['lowcal'] = True
+
+#     print(filters)
+
+#     output = ""
+#     for key, value in filters.items():
+#         if value:
+#             output += key[0].upper()
+#         else:
+#             output += ""
+
+#     print(output)
+
+#     menu = Item.query.filter(output in Item.filters).all()
+#     menu_list = []
+#     for item in menu:
+#         item_data = {
+#             'id': item.id,
+#             'name': item.name,
+#             'price': item.price,
+#             'description': item.description,
+#             'calories': item.calories,
+#             'category': item.category,
+#             'image_path': item.image_path
+#         }
+#         menu_list.append(item_data)
+#     return jsonify(menu_list)
+
+
+from sqlalchemy import or_, and_
+
+@app.route('/get_menu_filter', methods=['POST'])
+def get_menu_filter():
+    # get filter values from request body
+    vegetarian = request.json['vegetarian']
+    gluten = request.json['gluten']
+    dairy = request.json['dairy']
+    spicy = request.json['spicy']
+    lowcal = request.json['lowcal']
+
+
+    # construct filter expression
+    filter_expr = []
+    if vegetarian:
+        filter_expr.append(Item.filters.like('%V%'))
+    if gluten:
+        filter_expr.append(Item.filters.like('%G%'))
+    if dairy:
+        filter_expr.append(Item.filters.like('%D%'))
+    if spicy:
+        filter_expr.append(Item.filters.like('%S%'))
+    if lowcal:
+        filter_expr.append(Item.filters.like('%L%'))
+
+    # combine filter expressions using OR operator
+    if filter_expr:
+        filter_condition = and_(*filter_expr)
+        menu = Item.query.filter(filter_condition).all()
+    else:
+        menu = Item.query.all()
+
+    # format output data
+    menu_list = []
+    for item in menu:
+        item_data = {
+            'id': item.id,
+            'name': item.name,
+            'price': item.price,
+            'description': item.description,
+            'calories': item.calories,
+            'category': item.category,
+            'image_path': item.image_path
+        }
+        menu_list.append(item_data)
+
+    return jsonify(menu_list)
+
+
+#vegan V
+#gluten G
+#spicy S
+#vegetarian T
+#dairy D
+#lowcal L
 
 
 
