@@ -11,9 +11,9 @@ import ClientLogin from './Components/Client/ClientLogin'
 import ClientRegister from './Components/Client/ClientRegister';
 import ClientMenu from './Components/Client/ClientMenu';
 import ClientDineIn from './Components/Client/ClientDineIn';
-import ClientDelivery from './Components/Client/ClientDelivery';
 import ClientBookATable from './Components/Client/ClientBookATable';
 import ClientRequestCar from './Components/Client/ClientRequestCar';
+import ClientFoodMenu from './Components/Client/ClientFoodMenu';
 
 //Restaurant Imports
 import RestLogin from './Components/Restaurant/RestLogin';
@@ -56,9 +56,9 @@ function App() {
           <Route path='/clientregister' element={<ClientRegister />} />
           <Route path='/clientmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientMenu /></Protected>} />
           <Route path='/clientdinein' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDineIn /></Protected>} />
-          <Route path='/clientdelivery' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDelivery /></Protected>} />
           <Route path='/clientbookatable' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientBookATable /></Protected>} />
           <Route path='/clientrequestcar' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestCar /></Protected>} />
+          <Route path='/clientfoodmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientFoodMenu /></Protected>} />
 
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>

@@ -33,21 +33,28 @@ const Navbar = ({ onUserTokenChange }) => {
     };
   }, []);
 
+  const hideBackButton = () => {
+    const excludedPaths = ['/clientlogin', '/clientregister', '/clientmenu'];
+    return !excludedPaths.includes(location.pathname);
+  }
+  
+
   return (
     <body>
       <div className="container-sm mb-5">
         <nav className="navbar bg-body-tertiary">
           <div className="container-fluid">
-            <Button variant="outline-secondary" onClick={() => navigate(-1)}>Back</Button>
+            {hideBackButton() && (
+              <Button variant="outline-secondary" onClick={() => navigate(-1)}>Back</Button>
+            )}
+            <p> </p>
             <span className="navbar-text">
-            {userToken != null && (
-                <p>{username && ` ${username}`}</p>
-              )
-              }
               {userToken != null && (
-                <button class="btn btn-danger" onClick={logout}>Logout </button>
-              )
-              }
+                <p>{username && ` ${username}`}</p>
+              )}
+              {userToken != null && (
+                <button className="btn btn-danger" onClick={logout}>Logout </button>
+              )}
             </span>
           </div>
         </nav>

@@ -18,11 +18,6 @@ function ClientMenu() {
             </div>
 
             <br></br>
-
-            <div onClick={() => { navigate("/clientdelivery",{ state: { username: username } }) }} class="container deliverypicture">
-                <center><h1>Delivery</h1></center>
-            </div>
-
             <br></br>
 
             <div onClick={() => { navigate("/clientbookatable",{ state: { username: username } }) }} class="container bookatablepicture">

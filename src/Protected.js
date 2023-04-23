@@ -2,8 +2,6 @@
 import { Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getUserToken } from './LocalStorage';
-import loginStatus from './Components/Client/ClientLogin'
-import Navbar from './Components/Header/Navbar';
 
 
 // Replace the Protected component with the following
