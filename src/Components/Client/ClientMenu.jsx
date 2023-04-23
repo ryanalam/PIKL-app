@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './ClientMenu.css';
 import { useNavigate } from 'react-router-dom';
 
+var SERVER_URL = "http://127.0.0.1:5000";
 
 function ClientMenu() {
     const navigate = useNavigate();

@@ -13,6 +13,7 @@ function ClientBookATable() {
     let [table_id, set_table_id] = useState('');
     let [showSuccessMessage, setShowSuccessMessage] = useState(false);
     let [showErrorMessage, setShowErrorMessage] = useState(false);
+    let [message, setMessage] = useState('');
     let [userToken, setUserToken] = useState([getUserToken()]);
     const navigate = useNavigate();
 
@@ -46,12 +47,13 @@ function ClientBookATable() {
         console.log('reserving', table_id, number_of_people, start_time);
         const response = await bookATable(table_id, number_of_people, start_time);
         console.log('response', response);
-        if (response.message = "Table is not available.") {
-            setShowSuccessMessage(false);
-            setShowErrorMessage(true);
-        } else {
+        setMessage(response.message);
+        if (response.message === "Reservation created successfully.") {
             setShowSuccessMessage(true);
             setShowErrorMessage(false);
+        } else {
+            setShowSuccessMessage(false);
+            setShowErrorMessage(true);
         }
     }
 
@@ -114,11 +116,20 @@ function ClientBookATable() {
                 <br></br>
                 <button type="button" class="btn btn-primary" onClick={handleBookATable}> Submit </button>
 
-
+        
+        {showErrorMessage && (
+            <div className="alert alert-danger mt-2" role="alert">
+            {message}
+            </div>
+        )}    
+   
+        {showSuccessMessage && (
+            <div className="alert alert-success mt-2" role="alert">
+            You have successfully reserved a table.
+            </div>
+        )}
 
         </div>
-
-
     )
 
 

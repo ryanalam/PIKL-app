@@ -172,7 +172,7 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
 
-var SERVER_URL = "http://127.0.0.1:3500";
+var SERVER_URL = "http://127.0.0.1:5000";
 
 function ClientRegister() {
   const navigate = useNavigate();
