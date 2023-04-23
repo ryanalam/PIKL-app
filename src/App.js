@@ -4,6 +4,7 @@ import Navbar from './Components/Header/Navbar';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter, Route, Routes} from "react-router-dom";
 import * as React from 'react';
+import { useState } from 'react';
 
 // Client Imports
 import ClientLogin from './Components/Client/ClientLogin'
@@ -28,9 +29,17 @@ import KitchenQueue from './Components/Kitchen/KitchenQueue';
 import StaffInsights from './Components/Staff/StaffInsights';
 import StaffMenu from './Components/Staff/StaffMenu';
 import StaffStock from './Components/Staff/StaffStock';
+import { getUserToken } from './LocalStorage';
+import Protected from './Protected';
 
 
 function App() {
+  const [userToken, setUserToken] = useState(getUserToken());
+
+  function handleUserTokenChange() {
+    setUserToken(getUserToken());
+  }
+
   return (
 
     <>
@@ -38,18 +47,18 @@ function App() {
     <div className="App">
       <header>
         <LogoHeader />
-        < Navbar />
+        <Navbar onUserTokenChange={handleUserTokenChange}/>
       </header>
     
         <Routes> 
           {/* All client Pages */}
-          <Route path='/clientlogin' element={<ClientLogin />} />
+          <Route path='/clientlogin' element={<ClientLogin/>}/>
           <Route path='/clientregister' element={<ClientRegister />} />
-          <Route path='/clientmenu' element={<ClientMenu />} />
-          <Route path='/clientdinein' element={<ClientDineIn />} />
-          <Route path='/clientdelivery' element={<ClientDelivery />} />
-          <Route path='/clientbookatable' element={<ClientBookATable />} />
-          <Route path='/clientrequestcar' element={<ClientRequestCar />} />
+          <Route path='/clientmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientMenu /></Protected>} />
+          <Route path='/clientdinein' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDineIn /></Protected>} />
+          <Route path='/clientdelivery' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientDelivery /></Protected>} />
+          <Route path='/clientbookatable' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientBookATable /></Protected>} />
+          <Route path='/clientrequestcar' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestCar /></Protected>} />
 
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>

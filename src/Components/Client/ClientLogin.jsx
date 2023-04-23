@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
-import { getUserToken,saveUserToken} from "../../LocalStorage";
+import { getUserToken,saveUserToken, clearUserToken} from "../../LocalStorage";
 
-var SERVER_URL = "http://127.0.0.1:5000";
+var SERVER_URL = "http://127.0.0.1:3500";
 
 function ClientLogin() {
   let [loginStatus, setLoginStatus] = useState(false);
@@ -47,11 +47,14 @@ function ClientLogin() {
     } else {
       setShowSuccessMessage(false);
       setShowErrorMessage(true);
+      setLoginStatus(false);
+      setUserToken(null);
+      saveUserToken(null);
+      clearUserToken();
+      window.location.reload(false);
+
     }
   }
-
-
-  
   useEffect(() => {
     if (loginStatus) {
       setTimeout(() => {

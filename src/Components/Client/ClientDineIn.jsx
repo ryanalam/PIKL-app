@@ -3,12 +3,15 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './ClientDineIn.css';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
 
 
 function ClientDineIn() {
     const navigate = useNavigate();
     const [clicked, setClicked] = useState(false);
     const [disabled, setDisabled] = useState(false);
+    const location = useLocation();
+    const username = location.state && location.state.username;
   
     function handleClick() {
       setClicked(true);
@@ -45,25 +48,25 @@ function ClientDineIn() {
                 Call Waiter
             </button>            
 
-            <div onClick={() => { navigate("/clientfoodmenu") }} class="container menupicture">
+            <div onClick={() => { navigate("/clientfoodmenu",{ state: { username: username } }) }} class="container menupicture">
                 <center><h1>Menu</h1></center>
             </div>
 
             <br></br>
 
-            <div onClick={() => { navigate("/clientrequestbill") }} class="container billpicture">
+            <div onClick={() => { navigate("/clientrequestbill",{ state: { username: username } }) }} class="container billpicture">
                 <center><h1>Request Bill</h1></center>
             </div>
 
             <br></br>
 
-            <div onClick={() => { navigate("/clientrequestcar") }} class="container valetpicture">
+            <div onClick={() => { navigate("/clientrequestcar",{ state: { username: username } }) }} class="container valetpicture">
                 <center><h1>Request Car</h1></center>
             </div>
 
             <br></br>
 
-            <div onClick={() => { navigate("/clientfeedback") }} class="container feedbackpicture">
+            <div onClick={() => { navigate("/clientfeedback",{ state: { username: username } }) }} class="container feedbackpicture">
                 <center><h1>Feedback</h1></center>
             </div>
             <br></br>
