@@ -129,6 +129,7 @@ class Reservation(db.Model):
     end_time = db.Column(db.DateTime, nullable=True)
     number_of_people = db.Column(db.Integer, nullable=False)
     customer_name = db.Column(db.String(50), nullable=True)
+    status = db.Column(db.Boolean, nullable=False)
     
     def __init__(self, customer_id, table_id, start_time, end_time, number_of_people, customer_name):
         super(Reservation, self).__init__(
@@ -577,6 +578,11 @@ def confirm_email(token):
 
 def helper2():
     return redirect("http://localhost:3000/clientmenu")
+
+
+# @app.route('/request_bill', methods=['GET'])
+# def request_bill():
+    
 
 from stock_management import stock_management
 from order import order

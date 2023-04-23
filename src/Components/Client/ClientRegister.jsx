@@ -55,7 +55,7 @@ function ClientRegister() {
   if (registerSuccess) {
     return (
       <div>
-        <p>Registration successful. Please check your email to activate your account.</p>
+        <p>Registration successful. You can now close this tab.</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ function ClientRegister() {
 
     <div className="d-grid gap-2 col-6 mx-auto">
       <button className="btn btn-primary" type="button" disabled={isRegistering} onClick={handleRegister}>
-        {isRegistering ? 'Registering...' : 'Register'}
+        {isRegistering ? 'Please check your e-mail to activate your account.' : 'Register'}
       </button>
     </div>
 

@@ -40,6 +40,8 @@ function ClientLogin() {
     console.log('logging in with', username, password);
     const response = await login(username, password);
     if (response.access_token) {
+      
+      console.log(username);
       setLoginStatus(true);
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
