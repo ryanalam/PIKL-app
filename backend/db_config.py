@@ -1,1 +1,1 @@
-DB_CONFIG = 'mysql+pymysql://root:beccaroni@127.0.0.1:3306/RMSDB'
+DB_CONFIG = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
