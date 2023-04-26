@@ -77,7 +77,8 @@ class Item(db.Model):
     description = db.Column(db.String(1000), nullable=False)
     calories = db.Column(db.Integer, nullable=False)
     category = db.Column(db.String(50), nullable=True)
-    
+    image_path = db.Column(db.String(1000), nullable=True)
+    filters = db.Column(db.String(50), nullable=True)
 
 class Waiter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
