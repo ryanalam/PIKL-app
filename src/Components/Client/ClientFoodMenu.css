@@ -1,3 +1,22 @@
 .cardsize{
     width: 14rem
 }
+.filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .form-check-inline {
+    margin-right: 1rem;
+  }
+  
+  .apply-filter {
+    margin-left: 1rem;
+  }
+.applyfilterbutton{
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
+}  
