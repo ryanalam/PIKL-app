@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './ClientFoodMenu.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faCheese, faBreadSlice, faTree, faHeart, faAllergies } from '@fortawesome/free-solid-svg-icons';
+import { faFire, faCheese, faBreadSlice, faTree, faHeart, faAllergies, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 const SERVER_URL = 'http://127.0.0.1:3500';
 
@@ -16,6 +16,8 @@ function ClientFoodMenu() {
     lowcal: false,
     nuts: false
   });
+  const [cartItems, setCartItems] = useState([]);
+  const [newCartItems, setNewCartItems] = useState([]);
 
   useEffect(() => {
     // fetch menu items from backend and set state
@@ -33,7 +35,17 @@ function ClientFoodMenu() {
 
   const addToCart = (item) => {
     // add item to cart
-    console.log(item.name);
+    const newCartItems = [...cartItems, { name: item.name, price: item.price }];
+    setCartItems(newCartItems);
+    setNewCartItems(newCartItems);
+    console.log(newCartItems)
+  };
+
+  const CartButton = () => {
+    const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
+    
+    console.log(newCartItems)
+    console.log("Total price : " + totalPrice)
   };
 
   const handleFilterChange = (event) => {
@@ -65,54 +77,60 @@ function ClientFoodMenu() {
 
   return (
     <div className="container-sm">
-<div className="row">
-  <div className="col">
-    <div className="filter">
-      <div className="form-check form-check-inline">
-      <input type="checkbox" className="form-check-input" name="gluten" checked={filter.gluten} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faBreadSlice} className="icon" /> Gluten
-        </label>
+      <div className="row">
+        <div className="col">
+          <div className="filter">
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="gluten" checked={filter.gluten} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faBreadSlice} className="icon" /> Gluten
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="spicy" checked={filter.spicy} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faFire} className="icon" /> Spicy
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="vegetarian" checked={filter.vegetarian} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faTree} className="icon" /> Vegetarian
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="dairy" checked={filter.dairy} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faCheese} className="icon" /> Dairy
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="lowcal" checked={filter.lowcal} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faHeart} className="icon" /> Lowcal
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input type="checkbox" className="form-check-input" name="nuts" checked={filter.nuts} onChange={handleFilterChange} />
+              <label className="form-check-label">
+                <FontAwesomeIcon icon={faAllergies} className="icon" /> Nuts
+              </label>
+            </div>
+            <div className="apply-filter">
+              <button className="btn btn-primary applyfilterbutton" onClick={() => handleApplyFilter()}>Apply filter</button>
+              <br></br>
+            </div>
+          </div>
+          <br></br>
+        </div>
+        <button icon={faCartShopping} className="btn btn-primary" onClick={() => CartButton()} > Cart
+        {/* <FontAwesomeIcon icon={faCartShopping} onClick={() => CartButton()} className="icon" /> Cart */}
+      </button>
+          <br></br>
+
       </div>
-      <div className="form-check form-check-inline">
-      <input type="checkbox" className="form-check-input" name="spicy" checked={filter.spicy} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faFire} className="icon" /> Spicy
-        </label>
-      </div>
-      <div className="form-check form-check-inline">
-        <input type="checkbox" className="form-check-input" name="vegetarian" checked={filter.vegetarian} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faTree} className="icon" /> Vegetarian
-        </label>
-      </div>
-      <div className="form-check form-check-inline">
-      <input type="checkbox" className="form-check-input" name="dairy" checked={filter.dairy} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faCheese} className="icon" /> Dairy
-        </label>
-      </div>
-      <div className="form-check form-check-inline">
-      <input type="checkbox" className="form-check-input" name="lowcal" checked={filter.lowcal} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faHeart} className="icon" /> Lowcal
-        </label>
-      </div>
-      <div className="form-check form-check-inline">
-      <input type="checkbox" className="form-check-input" name="nuts" checked={filter.nuts} onChange={handleFilterChange} />
-        <label className="form-check-label">
-          <FontAwesomeIcon icon={faAllergies} className="icon" /> Nuts
-        </label>
-      </div>
-      <div className="apply-filter">
-        <br></br>
-        <button className="btn btn-primary applyfilterbutton" onClick={() => handleApplyFilter()}>Apply filter</button>
-        <br></br>
-      </div>
-    </div>
-  </div>
-</div>
-<br></br>
+      <br></br>
+      <br></br>
       <div className="row row-cols-1 row-cols-md-3 g-4">
         {menuItems.map((item) => (
           <div key={item.id} className="col">
@@ -124,7 +142,7 @@ function ClientFoodMenu() {
                 <p className="card-text fw-bold">${item.price}</p>
               </div>
               <div className="card-footer">
-              <button className="btn btn-primary" onClick={() => addToCart(item)}>Add to cart</button>
+                <button className="btn btn-primary" onClick={() => addToCart(item)}>Add to cart</button>
               </div>
             </div>
           </div>
@@ -134,6 +152,5 @@ function ClientFoodMenu() {
   );
 }
 // asd
-
 
 export default ClientFoodMenu;
