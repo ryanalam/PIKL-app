@@ -3,11 +3,20 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './ClientFoodMenu.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFire, faCheese, faBreadSlice, faTree, faHeart, faAllergies, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { Drawer } from '@mui/material'
+import { getUserToken } from '../../LocalStorage';
+
 
 const SERVER_URL = 'http://127.0.0.1:3500';
 
 function ClientFoodMenu() {
   const [menuItems, setMenuItems] = useState([]);
+  const [notes, setNotes] = useState({});
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [quantities, setQuantities] = useState({});
+  const user_token = getUserToken();
+  const [totalQuantity, setTotalQuantity] = useState(0); // new state variable
+
   const [filter, setFilter] = useState({
     gluten: false,
     spicy: false,
@@ -17,7 +26,12 @@ function ClientFoodMenu() {
     nuts: false
   });
   const [cartItems, setCartItems] = useState([]);
-  const [newCartItems, setNewCartItems] = useState([]);
+
+  useEffect(() => {
+    // calculate total quantity in cart whenever cart is updated
+    const total = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    setTotalQuantity(total);
+  }, [cartItems]);
 
   useEffect(() => {
     // fetch menu items from backend and set state
@@ -34,24 +48,77 @@ function ClientFoodMenu() {
   }, []);
 
   const addToCart = (item) => {
-    // add item to cart
-    const newCartItems = [...cartItems, { name: item.name, price: item.price }];
-    setCartItems(newCartItems);
-    setNewCartItems(newCartItems);
-    console.log(newCartItems)
+    const itemInCart = cartItems.find((cartItem) => cartItem.name === item.name);
+
+    if (itemInCart) {
+      const updatedCartItems = cartItems.map((cartItem) => {
+        if (cartItem.name === item.name) {
+          const updatedCartItem = { ...cartItem };
+          updatedCartItem.quantity += 1;
+          return updatedCartItem;
+        }
+        return cartItem;
+      });
+      setCartItems(updatedCartItems);
+      setQuantities({ ...quantities, [item.name]: itemInCart.quantity + 1 });
+      setTotalQuantity(totalQuantity + 1);
+    } else {
+      const newCartItem = { name: item.name, price: item.price, quantity: 1 };
+      const newCartItems = [...cartItems, newCartItem];
+      setCartItems(newCartItems);
+      setQuantities({ ...quantities, [item.name]: 1 });
+      setTotalQuantity(totalQuantity + 1);
+    }
+    setNotes({ ...notes, [item.name]: "" });
   };
 
-  const CartButton = () => {
-    const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
-    
-    console.log(newCartItems)
-    console.log("Total price : " + totalPrice)
+  const handleQuantityChange = (itemName, quantity) => {
+    if (quantity === 0) {
+      handleRemoveItem(itemName);
+    } else {
+      const updatedCartItems = cartItems.map((cartItem) => {
+        if (cartItem.name === itemName) {
+          const updatedCartItem = { ...cartItem };
+          updatedCartItem.quantity = quantity;
+          return updatedCartItem;
+        }
+        return cartItem;
+      });
+      setCartItems(updatedCartItems);
+      setQuantities({ ...quantities, [itemName]: quantity });
+      const itemInCart = cartItems.find((cartItem) => cartItem.name === itemName);
+      const currentQuantity = itemInCart ? itemInCart.quantity : 0;
+      setTotalQuantity(totalQuantity - currentQuantity + quantity);
+    }
+  };
+  const handleNoteChange = (itemName, note) => {
+    setNotes({ ...notes, [itemName]: note });
+  };
+  const handleRemoveItem = (itemName) => {
+    const updatedCartItems = cartItems.filter((item) => item.name !== itemName);
+    setCartItems(updatedCartItems);
+    const { [itemName]: note, ...restOfNotes } = notes;
+    setNotes(restOfNotes);
+    const { [itemName]: quantity, ...restOfQuantities } = quantities;
+    setQuantities(restOfQuantities);
   };
 
   const handleFilterChange = (event) => {
     const { name, checked } = event.target;
     setFilter(prevFilter => ({ ...prevFilter, [name]: checked }));
   };
+
+  const placeOrder = () => {
+    const items = cartItems.map(item => ({ item_id: item.name, quantity: item.quantity }));
+    const order = {
+      items: items,
+      notes: notes,
+      total_quantity: totalQuantity,
+      user_token: user_token
+    };
+    window.alert("Order Placed")
+    console.log(order)
+};
 
   const handleApplyFilter = () => {
     console.log(filter);
@@ -83,7 +150,7 @@ function ClientFoodMenu() {
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="gluten" checked={filter.gluten} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faBreadSlice} className="icon" /> Gluten
+                <FontAwesomeIcon icon={faBreadSlice} className="icon iconsize" /> Gluten
               </label>
             </div>
             <div className="form-check form-check-inline">
@@ -120,13 +187,47 @@ function ClientFoodMenu() {
               <button className="btn btn-primary applyfilterbutton" onClick={() => handleApplyFilter()}>Apply filter</button>
               <br></br>
             </div>
+            <button icon={faCartShopping} className="btn btn-primary rounded-circle BlinkButton" onClick={() => setIsDrawerOpen(true)}>
+              <FontAwesomeIcon icon={faCartShopping} />
+              {totalQuantity > 0 && <span className="badge bg-danger position-absolute top-0 end-0">{totalQuantity}</span>}
+            </button>
           </div>
-          <br></br>
         </div>
-        <button icon={faCartShopping} className="btn btn-primary" onClick={() => CartButton()} > Cart
-        {/* <FontAwesomeIcon icon={faCartShopping} onClick={() => CartButton()} className="icon" /> Cart */}
-      </button>
-          <br></br>
+        <Drawer
+          anchor='right' open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+          <div className='container-sm'>
+          {cartItems.length > 0 ? (
+            <ul>
+              <br></br>
+              {cartItems.map((item, index) => (
+                <li key={index} className="cart-item">
+                  <div className="item-info">
+                    <h5>{item.name}</h5>
+                  </div>
+                  <h5>{item.price}$</h5>
+                  {<input className='input-group-text' type="text" placeholder="Note" value={notes[item.name] || ""} onChange={(e) => handleNoteChange(item.name, e.target.value)} />}
+                  <br></br>
+                  <div className="item-quantity">
+                    <button className="quantity-btn" onClick={() => handleQuantityChange(item.name, quantities[item.name] - 1)}>-</button>
+                    <span className="quantity">{quantities[item.name] || 1}</span>
+                    <button className="quantity-btn" onClick={() => handleQuantityChange(item.name, quantities[item.name] + 1)}>+</button>
+                    <button className="remove-btn" onClick={() => handleRemoveItem(item.name)}>Remove</button>
+                  </div>
+                </li>
+              ))}
+              <center><p>Total: {Math.round(cartItems.reduce((total, item) => total + item.price * (quantities[item.name] || 1), 0) * 100) / 100}$</p></center>
+              <div>
+              <center><button className='btn btn-primary' onClick={() => placeOrder() }>Place Order</button></center>
+              </div>
+            </ul>
+            
+            ) : (
+              <h4>Cart is empty</h4>
+            )}
+          </div>
+        </Drawer>
+
+        <br></br>
 
       </div>
       <br></br>
@@ -138,6 +239,7 @@ function ClientFoodMenu() {
               <img src={item.image_path} className="card-img-top" alt={item.name} />
               <div className="card-body">
                 <h5 className="card-title">{item.name}</h5>
+                <p className="card-text">{item.calories}cal</p>
                 <p className="card-text">{item.description}</p>
                 <p className="card-text fw-bold">${item.price}</p>
               </div>
@@ -149,6 +251,7 @@ function ClientFoodMenu() {
         ))}
       </div>
     </div>
+
   );
 }
 // asd

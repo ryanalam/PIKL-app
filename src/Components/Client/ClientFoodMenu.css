@@ -1,6 +1,11 @@
 .cardsize{
     width: 14rem
 }
+
+.iconsize {
+  font-size: 16px; /* or font-size: 1; */
+}
+
 .filter {
     display: flex;
     flex-wrap: wrap;
@@ -14,9 +19,91 @@
   
   .apply-filter {
     margin-left: 1rem;
+    margin-right: 30px;
   }
 .applyfilterbutton{
     --bs-btn-padding-y: .25rem;
     --bs-btn-padding-x: .5rem;
     --bs-btn-font-size: .75rem;
 }  
+.cart-item {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.item-container {
+  display: flex;
+  align-items: center;
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.item-info p {
+  margin-right: 10px;
+}
+
+.item-quantity {
+  align-items: center;
+}
+
+.quantity-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.quantity {
+  font-size: 16px;
+  margin: 0 10px;
+}
+
+.remove-btn {
+  background-color: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.cart-container {
+  position: fixed;
+  z-index: 9999;
+  float: right;
+  width: 300px;
+  height: auto;
+  width: max-content;
+  background-color: rgb(255, 255, 255);
+  
+}
+
+.cart-container.open {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.BlinkButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  font-size: 14px;
+}
+
+
+.rounded-circle {
+border-radius: 100%;
+}
