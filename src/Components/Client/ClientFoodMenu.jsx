@@ -4,6 +4,8 @@ import './ClientFoodMenu.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFire, faCheese, faBreadSlice, faTree, faHeart, faAllergies, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { Drawer } from '@mui/material'
+import { ToastContainer,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { getUserToken } from '../../LocalStorage';
 
 
@@ -116,7 +118,7 @@ function ClientFoodMenu() {
       total_quantity: totalQuantity,
       user_token: user_token
     };
-    window.alert("Order Placed")
+    toast.success(`Order Placed!`);
     console.log(order)
 };
 
@@ -226,6 +228,10 @@ function ClientFoodMenu() {
             )}
           </div>
         </Drawer>
+        <>
+    <ToastContainer/>
+    {<p>Order Placed</p>}
+    </>
 
         <br></br>
 
