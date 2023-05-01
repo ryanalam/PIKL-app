@@ -21,7 +21,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beccaroni@127.0.0.1:3306/RMSDB'
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -30,20 +30,12 @@ bcrypt = Bcrypt(app)
 CORS(app,resources={r"/*":{"origins":"*"}})
 ma = Marshmallow(app)
 
-
-
-
-
-
-
 # Set up SQLAlchemy
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 app.app_context().push()
-
-
 
 # Define the customer model
 class Customer(db.Model):

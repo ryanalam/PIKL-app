@@ -32,6 +32,7 @@ def create_order():
     table_id = data.get('table_id')
     items = data.get('items')
     
+    
     if not customer_id or not waiter_id or not  table_id or not items:
         return jsonify({'message': 'Missing parameters'}), 400
     
@@ -54,7 +55,7 @@ def create_order():
             return jsonify({'message': 'Missing item information'}), 400
         
         # Create a new order record with the next available order ID
-        order_item = Orders(id=next_id, customer_id=customer_id, waiter_id=waiter_id,  date_id=date_id, table_id=table_id, item_id=item_id, quantity=quantity)
+        order_item = Orders(id=next_id, customer_id=customer_id, waiter_id=waiter_id,  date_id=date_id, table_id=table_id, item_id=item_id, quantity=quantity, status =0)
         db.session.add(order_item)
         
         # Update the stock level for each ingredient in the item
@@ -75,7 +76,6 @@ def create_order():
     db.session.commit()
     
     return jsonify({'message': 'Order created successfully'}), 201
-
 
 @app.route('/edit_order/<int:order_id>', methods=['PUT'])
 def edit_order(order_id):
@@ -270,6 +270,57 @@ def get_menu_filter():
 #lowcal L
 
 
+# @app.route('/bill/<int:order_id>', methods=['GET'])
+# def print_bill(order_id):
+#     # Join the Date table to the Orders table to get the date information
+#     order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
+
+#     # Check if the order exists
+#     if order is None:
+#         return jsonify({'error': 'Order not found'}), 404
+
+#     # Get the customer information
+#     customer = Customer.query.filter_by(id=order.Orders.customer_id).first()
+
+#     # Get the waiter information
+#     waiter = Waiter.query.filter_by(id=order.Orders.waiter_id).first()
+
+#     # Get the table information
+#     table = Tables.query.filter_by(id=order.Orders.table_id).first()
+
+#     # Get all the items for the order
+#     items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
+
+#     # Calculate the total amount
+#     total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
+
+#     # Format the bill
+#     bill = f'--------------------------\n' \
+#            f'Order ID: {order.Orders.id}\n' \
+#            f'Date: {order.date}\n' \
+#         #    f'--------------------------\n'
+           
+#     bill += f'Customer: {customer.name}\n' \
+#             f'Table number: {table.number}\n' \
+#             f'Waiter: {waiter.name}\n' \
+#                 f'--------------------------\n'
+#             # f'Total bill amount: {total_amount}\n' \
+    
+
+#     for item in items:
+#         bill += f'Item: {item.Item.name}\n' \
+#                 f'Quantity: {item.Orders.quantity}\n' \
+#                 f'Price per unit: {item.Item.price}\n' \
+#                 f'Total amount: {item.Orders.quantity * item.Item.price}\n' \
+#                 f'--------------------------\n'
+                
+#     bill += f'Total bill amount: {total_amount}\n' \
+#             f'--------------------------\n'
+
+#     print(bill)
+
+#     return bill
+
 @app.route('/bill/<int:order_id>', methods=['GET'])
 def print_bill(order_id):
     # Join the Date table to the Orders table to get the date information
@@ -294,33 +345,28 @@ def print_bill(order_id):
     # Calculate the total amount
     total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
 
-    # Format the bill
-    bill = f'--------------------------\n' \
-           f'Order ID: {order.Orders.id}\n' \
-           f'Date: {order.date}\n' \
-        #    f'--------------------------\n'
-           
-    bill += f'Customer: {customer.name}\n' \
-            f'Table number: {table.number}\n' \
-            f'Waiter: {waiter.name}\n' \
-                f'--------------------------\n'
-            # f'Total bill amount: {total_amount}\n' \
-    
+    # Create a dictionary to store the bill information
+    bill = {
+        'order_id': order.Orders.id,
+        'date': order.date.strftime('%Y-%m-%d %H:%M:%S'),
+        'customer': customer.name,
+        'table_number': table.number,
+        'waiter': waiter.name,
+        'items': [],
+        'total_amount': total_amount
+    }
 
+    # Add each item to the 'items' list in the bill dictionary
     for item in items:
-        bill += f'Item: {item.Item.name}\n' \
-                f'Quantity: {item.Orders.quantity}\n' \
-                f'Price per unit: {item.Item.price}\n' \
-                f'Total amount: {item.Orders.quantity * item.Item.price}\n' \
-                f'--------------------------\n'
-                
-    bill += f'Total bill amount: {total_amount}\n' \
-            f'--------------------------\n'
+        item_data = {
+            'name': item.Item.name,
+            'quantity': item.Orders.quantity,
+            'price_per_unit': item.Item.price,
+            'total_amount': item.Orders.quantity * item.Item.price
+        }
+        bill['items'].append(item_data)
 
-
-
-    return bill
-
+    return jsonify(bill)
 
 
 @app.route('/check_table_availability', methods=['GET'])
@@ -438,3 +484,33 @@ def pay():
     except stripe.error.CardError as e:
         error = e.error
         return jsonify({'message': f"Payment failed: {error['message']}"})
+    
+
+@app.route('/get_customer_info', methods=['GET'])
+def get_customer_info():
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+    
+        if token:
+            t = decode_token(token)
+            customer_id = t['sub']
+    except:
+        return jsonify({'message': 'Please login'}), 400
+
+    customer = Customer.query.filter_by(id=customer_id).first()
+
+    #query the Visit table by customer id
+    visit = Visit.query.filter_by(customer_id=customer_id).first()
+
+    order = Orders.query.filter_by(customer_id=customer_id, status=0).first()
+
+    return jsonify({
+        'id': customer.id,
+        'name': customer.name,
+        'email': customer.email,
+        'phone': customer.phone,
+        'visit_id': visit.id,
+        'order_id': order.id,
+        'waiter_id': visit.waiter_id,
+        'table_id': visit.table_id
+        })
