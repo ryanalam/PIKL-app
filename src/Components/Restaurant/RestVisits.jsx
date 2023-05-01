@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { getWaiterToken } from '../../LocalStorage';
+import { ToastContainer, toast } from 'react-toastify';
 
 const SERVER_URL = "http://127.0.0.1:3500";
 
