@@ -152,37 +152,37 @@ function ClientFoodMenu() {
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="gluten" checked={filter.gluten} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faBreadSlice} className="icon iconsize" /> Gluten
+                <FontAwesomeIcon icon={faBreadSlice} className="icon iconsize " /> Gluten
               </label>
             </div>
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="spicy" checked={filter.spicy} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faFire} className="icon" /> Spicy
+                <FontAwesomeIcon icon={faFire} className="icon iconsize" /> Spicy
               </label>
             </div>
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="vegetarian" checked={filter.vegetarian} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faTree} className="icon" /> Vegetarian
+                <FontAwesomeIcon icon={faTree} className="icon iconsize" /> Vegetarian
               </label>
             </div>
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="dairy" checked={filter.dairy} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faCheese} className="icon" /> Dairy
+                <FontAwesomeIcon icon={faCheese} className="icon iconsize" /> Dairy
               </label>
             </div>
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="lowcal" checked={filter.lowcal} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faHeart} className="icon" /> Lowcal
+                <FontAwesomeIcon icon={faHeart} className="icon iconsize" /> Lowcal
               </label>
             </div>
             <div className="form-check form-check-inline">
               <input type="checkbox" className="form-check-input" name="nuts" checked={filter.nuts} onChange={handleFilterChange} />
               <label className="form-check-label">
-                <FontAwesomeIcon icon={faAllergies} className="icon" /> Nuts
+                <FontAwesomeIcon icon={faAllergies} className="icon iconsize" /> Nuts
               </label>
             </div>
             <div className="apply-filter">
@@ -190,7 +190,7 @@ function ClientFoodMenu() {
               <br></br>
             </div>
             <button icon={faCartShopping} className="btn btn-primary rounded-circle BlinkButton" onClick={() => setIsDrawerOpen(true)}>
-              <FontAwesomeIcon icon={faCartShopping} />
+              <FontAwesomeIcon icon={faCartShopping} className="icon iconsize" />
               {totalQuantity > 0 && <span className="badge bg-danger position-absolute top-0 end-0">{totalQuantity}</span>}
             </button>
           </div>
@@ -230,7 +230,6 @@ function ClientFoodMenu() {
         </Drawer>
         <>
     <ToastContainer/>
-    {<p>Order Placed</p>}
     </>
 
         <br></br>

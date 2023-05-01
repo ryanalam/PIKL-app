@@ -3,7 +3,7 @@
 }
 
 .iconsize {
-  font-size: 16px; /* or font-size: 1; */
+  font-size: 20px !important; /* or font-size: 1; */
 }
 
 .filter {

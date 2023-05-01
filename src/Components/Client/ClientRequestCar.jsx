@@ -32,7 +32,7 @@ const RequestCar = () => {
 
             {isHidden && (
                 <><div class="form-floating mb-3 align-items-center">
-                    <input value={TicketNumberInput} onChange={OrderCarChange} type="text" class="form-control" id="TicketNumberInput" name="TicketNumberInput" placeholder='Ticket Nubers' />
+                    <input value={TicketNumberInput} onChange={OrderCarChange} type="number" class="form-control" id="TicketNumberInput" name="TicketNumberInput" placeholder='Ticket Numbers' />
                     <label for="floatingInput">Ticket Number</label>
                 </div><div class="d-grid gap-2 col-6 mx-auto">
                         <button class="btn btn-outline-primary" type="button" onClick={OrderCarClicked}>Order Car</button>
