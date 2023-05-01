@@ -11,3 +11,15 @@ return localStorage.removeItem("TOKEN");
 
 
 
+export function saveWaiterToken(waiterToken) {
+    localStorage.setItem("TOKEN", waiterToken);
+    window.dispatchEvent(new Event("storage"));
+  }
+
+export function getWaiterToken() {
+return localStorage.getItem("TOKEN");
+}
+
+export function clearWaiterToken() { 
+return localStorage.removeItem("TOKEN");
+}
