@@ -1,4 +1,5 @@
 from flask import Blueprint
+import stripe
 from app import *
 
 order = Blueprint('order', __name__)
@@ -269,4 +270,171 @@ def get_menu_filter():
 #lowcal L
 
 
+@app.route('/bill/<int:order_id>', methods=['GET'])
+def print_bill(order_id):
+    # Join the Date table to the Orders table to get the date information
+    order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
 
+    # Check if the order exists
+    if order is None:
+        return jsonify({'error': 'Order not found'}), 404
+
+    # Get the customer information
+    customer = Customer.query.filter_by(id=order.Orders.customer_id).first()
+
+    # Get the waiter information
+    waiter = Waiter.query.filter_by(id=order.Orders.waiter_id).first()
+
+    # Get the table information
+    table = Tables.query.filter_by(id=order.Orders.table_id).first()
+
+    # Get all the items for the order
+    items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
+
+    # Calculate the total amount
+    total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
+
+    # Format the bill
+    bill = f'--------------------------\n' \
+           f'Order ID: {order.Orders.id}\n' \
+           f'Date: {order.date}\n' \
+        #    f'--------------------------\n'
+           
+    bill += f'Customer: {customer.name}\n' \
+            f'Table number: {table.number}\n' \
+            f'Waiter: {waiter.name}\n' \
+                f'--------------------------\n'
+            # f'Total bill amount: {total_amount}\n' \
+    
+
+    for item in items:
+        bill += f'Item: {item.Item.name}\n' \
+                f'Quantity: {item.Orders.quantity}\n' \
+                f'Price per unit: {item.Item.price}\n' \
+                f'Total amount: {item.Orders.quantity * item.Item.price}\n' \
+                f'--------------------------\n'
+                
+    bill += f'Total bill amount: {total_amount}\n' \
+            f'--------------------------\n'
+
+
+
+    return bill
+
+
+
+@app.route('/check_table_availability', methods=['GET'])
+def check_table_availability():
+    # Get the current time
+    now = datetime.datetime.now()
+
+    # Calculate the approximate end time for reservations made now
+    approx_end_time = now + datetime.timedelta(hours=2)
+
+    # Get all reservations that are ongoing, start after the current time or end within the next 2 hours
+    reservations = Reservation.query.filter(((Reservation.end_time == None) | (Reservation.end_time > now)) & (Reservation.start_time < approx_end_time)).all()
+
+    # Create a set of occupied table IDs
+    occupied_tables = set([r.table_id for r in reservations])
+
+    # Get all tables
+    tables = Tables.query.all()
+
+    # Create a list of available table IDs
+    available_tables = [t.id for t in tables if t.id not in occupied_tables and t.status == 0]
+
+    return jsonify({'available_tables': available_tables})
+ 
+ 
+@app.route('/create_visit', methods=['POST'])
+def create_visit():
+    
+    customer_id = request.json.get('customer_id', None)
+    table_id = request.json['table_id']
+    time = datetime.datetime.now()
+
+    table = Tables.query.filter_by(id=table_id).first()
+    if table.status == True:
+        return jsonify({'message': 'Table is already occupied'}), 400
+
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+    
+        if token:
+            t = decode_token(token)
+            waiter_id = t['sub']
+    except:
+        return jsonify({'message': 'Please login'}), 400
+
+    visit = Visit(waiter_id=waiter_id, customer_id=customer_id, table_id=table_id, time=time)
+    db.session.add(visit)
+    db.session.commit()
+
+    # Update table status to True
+    table.status = True
+    db.session.commit()
+
+    return jsonify({
+        'id': visit.id,
+        'waiter_id': visit.waiter_id,
+        'customer_id': visit.customer_id,
+        'table_id': visit.table_id,
+        'time': visit.time
+    })
+
+
+
+@app.route('/pay', methods=['POST'])
+def pay():
+
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+    
+        if token:
+            t = decode_token(token)
+            customer_id = t['sub']
+    except:
+        return jsonify({'message': 'Please login'}), 400
+
+    order_id = request.json['order_id']
+    card = request.json['card']
+    exp_month = card['exp_month']
+    exp_year = card['exp_year']
+    cvc = card['cvc']
+    card_number = card['number']
+    email = db.session.query(Customer.email).filter(Customer.id == customer_id).first()[0]
+
+    order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
+    items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
+
+    # Calculate the total amount
+    total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
+
+    try:
+        payment_method = stripe.PaymentMethod.create(
+            type='card',
+            card={
+                'number': card_number,
+                'exp_month': exp_month,
+                'exp_year': exp_year,
+                'cvc': cvc
+            }
+        )
+
+        intent = stripe.PaymentIntent.create(
+            amount=int(total_amount*100),
+            currency='usd',
+            payment_method=payment_method.id,
+            confirm=True,
+            receipt_email=email
+        )
+
+        payment = Payment(order_id=order_id, amount=total_amount, date=datetime.datetime.now(), customer_id=customer_id, method='card')
+        db.session.add(payment)
+        db.session.commit()
+
+        return jsonify({"message": "Payment success"}), 200
+
+    except stripe.error.CardError as e:
+        error = e.error
+        return jsonify({'message': f"Payment failed: {error['message']}"})

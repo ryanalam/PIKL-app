@@ -1,4 +1,4 @@
-from db_config import DB_CONFIG
+import time
 from flask import Flask, jsonify, request,make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, decode_token
 from itsdangerous import SignatureExpired,URLSafeTimedSerializer
@@ -16,17 +16,24 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_mail import Mail, Message
 
+
+
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
-CORS(app)
+CORS(app,resources={r"/*":{"origins":"*"}})
 ma = Marshmallow(app)
+
+
+
+
+
 
 
 # Set up SQLAlchemy
@@ -69,6 +76,7 @@ class Orders(db.Model):
     date_id = db.Column(db.Integer, db.ForeignKey('date.id'), nullable=False)
     table_id = db.Column(db.Integer, db.ForeignKey('tables.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Boolean, nullable=False)
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,6 +87,8 @@ class Item(db.Model):
     category = db.Column(db.String(50), nullable=True)
     image_path = db.Column(db.String(1000), nullable=True)
     filters = db.Column(db.String(50), nullable=True)
+    
+    
 
 class Waiter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -104,6 +114,8 @@ class Payment(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    method = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
 
 class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,7 +142,6 @@ class Reservation(db.Model):
     end_time = db.Column(db.DateTime, nullable=True)
     number_of_people = db.Column(db.Integer, nullable=False)
     customer_name = db.Column(db.String(50), nullable=True)
-    status = db.Column(db.Boolean, nullable=False)
     
     def __init__(self, customer_id, table_id, start_time, end_time, number_of_people, customer_name):
         super(Reservation, self).__init__(
@@ -191,15 +202,28 @@ class Staff(db.Model):
             date_left=date_left
         )
 
-
+class Notif(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     table_id = db.Column(db.Integer, db.ForeignKey('tables.id'), nullable=False)
+     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+     time = db.Column(db.DateTime, nullable=False)
+     
+class Visit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    waiter_id = db.Column(db.Integer, db.ForeignKey('waiter.id'), nullable=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=True)
+    table_id = db.Column(db.Integer, db.ForeignKey('tables.id'), nullable=False)
+    time = db.Column(db.DateTime, nullable=False)
+    
+    
 
 
 app.app_context().push()
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
-app.config["MAIL_USERNAME"] = "piklalamoutrabboud@gmail.com"
-app.config["MAIL_PASSWORD"] = "tkzdczxebecgqbbz"
+app.config["MAIL_USERNAME"] = "piklauth@gmail.com"
+app.config["MAIL_PASSWORD"] = "rhwmgdajvwsqhqaw"
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 mail = Mail(app)
@@ -233,6 +257,7 @@ dict = {}
 #     return jsonify({'access_token': access_token}), 201
 
 if __name__ == '__main__':
+    
     app.run(debug=True)
     
 @app.route('/customer_login', methods=['POST'])
@@ -479,8 +504,6 @@ def new_reservation_app():
    
         # Check if table is available during the reservation time
     table = Tables.query.get(table_id)
-    # if table.status:
-    #     return jsonify({'message': 'Table is not available.'}), 400
 
     overlapping_reservations = Reservation.query.filter(
         Reservation.table_id == table_id,
@@ -496,7 +519,63 @@ def new_reservation_app():
     new_reservation = Reservation(customer_id=reservation.customer_id, table_id=table_id,number_of_people=number_of_people, start_time=start_time, end_time=end_time, customer_name=reservation.customer_name)
     db.session.add(new_reservation)
     db.session.commit()
-    return jsonify({'message': 'Reservation created successfully.'}), 201
+    return jsonify({'message': 'Reservation created successfully'}), 201
+
+
+
+
+@app.route('/new_reservation_phone', methods=['POST'])
+def new_reservation_phone():
+    table_id=request.json['table_id']
+    start=request.json['start_time']
+    start_time=dateparser.parse(start)
+    end_time=start_time+datetime.timedelta(hours=2)
+    number_of_people=request.json['number_of_people']
+    customer_name = request.json['customer_name']
+    
+    reservation = Reservation(None, table_id, start_time, end_time, number_of_people, customer_name)
+   
+    
+    #customer_id or not
+    if not table_id or not start_time or not end_time or not number_of_people:
+       return jsonify({'message': 'Please fill in all fields'}), 400
+   
+        # Check if table is available during the reservation time
+    table = Tables.query.get(table_id)
+
+    overlapping_reservations = Reservation.query.filter(
+        Reservation.table_id == table_id,
+        Reservation.start_time < end_time,
+        Reservation.end_time > start_time
+    ).all()
+    if overlapping_reservations:
+        return jsonify({'message': 'Table is already reserved during this time.'}), 400
+    
+    if table.capacity < number_of_people:
+        return jsonify({'message': 'Table is not big enough for this number of people.'}), 400
+ 
+    new_reservation = Reservation(customer_id=reservation.customer_id, table_id=table_id,number_of_people=number_of_people, start_time=start_time, end_time=end_time, customer_name=reservation.customer_name)
+    db.session.add(new_reservation)
+    db.session.commit()
+    return jsonify({'message': 'Reservation created successfully'}), 201
+
+
+
+
+
+
+
+
+def confirm_token(token):
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=3600)
+    except SignatureExpired:
+        return False
+    return email
+
+
+
+
 
 
 @app.route('/customer_signup', methods=['POST'])
@@ -520,26 +599,12 @@ def customer_signup():
     msg.body = "Your link to confirm your account is {}".format(link)
     mail.send(msg)
 
-    dict[token] = False
-
     helper(token, username, hashed_password, name, email, phone)
 
-    customer = Customer.query.filter_by(username=username).first()
-    access_token = create_access_token(identity=customer.id)
-    
-    return jsonify({'access_token': access_token}), 200
+    return jsonify({'message': 'Confirmation email sent. Please check your inbox.'}), 200
 
 
 
-    # return jsonify({'message': 'Account successfully created.'}), 200
-
-
-# def confirm_token(token):
-#     try:
-#         email = s.loads(token, salt="email-confirm", max_age=3600)
-#     except SignatureExpired:
-#         return False
-#     return email
 
 
 def helper(token, username, password, name, email, phone):
@@ -569,8 +634,7 @@ def confirm_email(token):
         return "<h1>The token is expired or invalid.</h1>"
 
     dict[token] = True
-    # helper2()
-    # return jsonify({'access_token': token}), 200
+
     response = make_response(jsonify({'access_token': token}))
     response.headers['Location'] = "http://localhost:3000/clientmenu"
     response.status_code = 302
@@ -581,12 +645,78 @@ def helper2():
     return redirect("http://localhost:3000/clientmenu")
 
 
-# @app.route('/request_bill', methods=['GET'])
-# def request_bill():
-    
+
+
+
+
+# table_calls = []
+
+# @app.route('/call_waiter', methods=['POST'])
+# def call_waiter():
+#     table_number = request.json['tableNumber']
+#     table_calls.append(table_number)
+#     return '', 204
+
+
+
+# @app.route('/waiter_notifications', methods=['POST'])
+# def waiter_notifications():
+#     table_number = request.json.get('tableNumber')
+#     if table_number is not None and table_number not in table_calls:
+#         table_calls.append(table_number)
+#     return {}
+
+# @app.route('/waiter_notifications', methods=['GET'])
+# def get_waiter_notifications():
+#     for call in table_calls:
+#         print (call)
+#     while not table_calls:
+#         time.sleep(1)
+#     table_number = table_calls.pop(0)
+#     return {'tableNumber': table_number}
+
+ 
+@app.route('/call_waiter', methods=['POST'])
+def call_waiter():
+    table_number = request.json['tableNumber']
+    new_notif = Notif(table_id=table_number, customer_id=1, time=datetime.now())
+    db.session.add(new_notif)
+    db.session.commit()
+    return '', 204
+
+
+@app.route('/waiter_notifications', methods=['POST'])
+def waiter_notifications():
+    table_number = request.json.get('tableNumber')
+    if table_number is not None:
+        new_notif = Notif(table_id=table_number, customer_id=1, time=datetime.datetime.now())
+        db.session.add(new_notif)
+        db.session.commit()
+    return {}
+ 
+ 
+@app.route('/waiter_notifications', methods=['GET'])
+def get_waiter_notifications():
+    oldest_allowed_time = datetime.datetime.now() - datetime.timedelta(minutes=30)
+    notifs = Notif.query.filter(Notif.time > oldest_allowed_time).all()
+    if notifs:
+        table_number = notifs[0].table_id
+        db.session.delete(notifs[0])
+        db.session.commit()
+        return {'tableNumber': table_number}
+    else:
+        time.sleep(1)
+        return {}
+
+
+
+
+
+
 
 from stock_management import stock_management
 from order import order
+
 
 app.register_blueprint(stock_management)
 app.register_blueprint(order)
