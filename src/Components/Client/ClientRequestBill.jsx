@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import axios from 'axios';
 import { getUserToken } from '../../LocalStorage';
 
@@ -7,15 +7,15 @@ const SERVER_URL = 'http://127.0.0.1:3500';
 
 const Bill = () => {
   const [orderId, setOrderId] = useState('');
-  const [customerId, setCustomerId] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [tableNumber, setTableNumber] = useState('');
-  const [waiterId, setWaiterId] = useState('');
+  const [waiterName, setWaiterName] = useState('');
   const [totalAmount, setTotalAmount] = useState('');
   const [items, setItems] = useState([]);
   let [userToken, setUserToken] = useState([getUserToken()]);
   
 
-  const handleRequestBillClick = () => {
+  useEffect(() => {
     fetch(`${SERVER_URL}/get_customer_info`, {
       method: 'GET',
       headers: {
@@ -26,7 +26,7 @@ const Bill = () => {
       .then(response => response.json())
       .then(data => {
         setOrderId(data.order_id);
-        setCustomerId(data.id);
+        setCustomerName(data.name);
         console.log('Order ID:', orderId);
         fetch(`${SERVER_URL}/bill/${data.order_id}`, {
           method: 'GET',
@@ -37,24 +37,23 @@ const Bill = () => {
           .then((response) => response.json())
           .then(data => {
             setTableNumber(data.table_number);
-            setWaiterId(data.waiter_id);
+            setWaiterName(data.waiter);
             setTotalAmount(data.total_amount);
             setItems(data.items);
           })
           .catch((error) => console.error(error));
       })
-      .catch(error => console.error('Error:', error));      
-  };
+      .catch(error => console.error('Error:', error));
+  }, []);
   
 
   return (
     <div>
-      <button onClick={handleRequestBillClick}>Request bill</button>
       <div>
         <p>Order ID: {orderId}</p>
-        <p>Customer ID: {customerId}</p>
+        <p>Customer Name: {customerName}</p>
         <p>Table Number: {tableNumber}</p>
-        <p>Waiter ID: {waiterId}</p>
+        <p>Waiter Name: {waiterName}</p>
         <p>Total Amount: {totalAmount}</p>
         <ul>
           {items.map(item => (
