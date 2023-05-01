@@ -45,8 +45,14 @@ def create_order():
     
     # Get the next available order ID
     max_order_id = db.session.query(func.max(Orders.id)).scalar() or 0
-    next_id = max_order_id + 1
-    
+
+    order_increment = Orders.query.filter_by(status=0, customer_id = customer_id).first()
+    if(order_increment == None):
+        next_id = max_order_id + 1
+    else:
+        next_id = order_increment.id
+    # next_id = max_order_id + 1
+
     # Iterate through the items and create a new record for each one
     for item in items:
         item_id = item.get('item_id')
@@ -54,25 +60,30 @@ def create_order():
         if not item_id or not quantity:
             return jsonify({'message': 'Missing item information'}), 400
         
-        # Create a new order record with the next available order ID
-        order_item = Orders(id=next_id, customer_id=customer_id, waiter_id=waiter_id,  date_id=date_id, table_id=table_id, item_id=item_id, quantity=quantity, status =0)
-        db.session.add(order_item)
+        order_exists = Orders.query.filter_by(id=next_id, item_id=item_id).first()
+
+        if(order_exists != None):
+            order_exists.quantity += quantity
+        else:
+            # Create a new order record with the next available order ID
+            order_item = Orders(id=next_id, customer_id=customer_id, waiter_id=waiter_id,  date_id=date_id, table_id=table_id, item_id=item_id, quantity=quantity, status =0)
+            db.session.add(order_item)
+            print(order_item)
+            # Update the stock level for each ingredient in the item
+            item_ingredients = item_ingredient.query.filter_by(item_id=item_id).all()
+            for combo in item_ingredients:
+                ingredient_id = combo.ingredient_id
+                required_quantity = combo.required_quantity
+                stock_fact = StockFact.query.filter_by(item_id=item_id, ingredient_id=ingredient_id).first()
+                if not stock_fact:
+                    # If no StockFact record exists for the item and ingredient, create a new one with the current stock level and subtract the usage quantity
+                    ingredient = Ingredient.query.get(ingredient_id)
+                    stock_fact = StockFact(date_id=date_id, item_id=item_id, ingredient_id=ingredient_id, stock_level=ingredient.stock, usage_quantity=quantity*required_quantity)
+                    db.session.add(stock_fact)
+                else:
+                    # If a StockFact record exists for the item and ingredient, update the stock level by subtracting the usage quantity
+                    stock_fact.stock_level -= quantity*required_quantity
         
-        # Update the stock level for each ingredient in the item
-        item_ingredients = item_ingredient.query.filter_by(item_id=item_id).all()
-        for combo in item_ingredients:
-            ingredient_id = combo.ingredient_id
-            required_quantity = combo.required_quantity
-            stock_fact = StockFact.query.filter_by(item_id=item_id, ingredient_id=ingredient_id).first()
-            if not stock_fact:
-                # If no StockFact record exists for the item and ingredient, create a new one with the current stock level and subtract the usage quantity
-                ingredient = Ingredient.query.get(ingredient_id)
-                stock_fact = StockFact(date_id=date_id, item_id=item_id, ingredient_id=ingredient_id, stock_level=ingredient.stock, usage_quantity=quantity*required_quantity)
-                db.session.add(stock_fact)
-            else:
-                # If a StockFact record exists for the item and ingredient, update the stock level by subtracting the usage quantity
-                stock_fact.stock_level -= quantity*required_quantity
-    
     db.session.commit()
     
     return jsonify({'message': 'Order created successfully'}), 201
@@ -504,13 +515,22 @@ def get_customer_info():
 
     order = Orders.query.filter_by(customer_id=customer_id, status=0).first()
 
-    return jsonify({
-        'id': customer.id,
-        'name': customer.name,
-        'email': customer.email,
-        'phone': customer.phone,
-        'visit_id': visit.id,
-        'order_id': order.id,
-        'waiter_id': visit.waiter_id,
-        'table_id': visit.table_id
-        })
+    order_id = order.id if order is not None else None
+    visit_id = visit.id if visit is not None else None
+    waiter_id = visit.waiter_id if visit is not None else None
+    table_id = visit.table_id if visit is not None else None
+
+
+    response = {
+    'id': customer.id,
+    'name': customer.name,
+    'email': customer.email,
+    'phone': customer.phone,
+    'visit_id': visit_id,
+    'order_id': order_id,
+    'waiter_id': waiter_id,
+    'table_id': table_id
+    }
+
+
+    return jsonify(response)

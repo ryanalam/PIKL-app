@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useNavigate } from 'react-router-dom';
+import { getWaiterToken,saveWaiterToken, clearWaiterToken} from "../../LocalStorage";
 
 var SERVER_URL = "http://127.0.0.1:3500";
 
@@ -10,6 +11,7 @@ function WaiterLogin() {
   let [password, setPassword] = useState('');
   let [showSuccessMessage, setShowSuccessMessage] = useState(false);
   let [showErrorMessage, setShowErrorMessage] = useState(false);
+  let [waiterToken, setWaiterToken] = useState(getWaiterToken() || '');
   const navigate = useNavigate();
 
   function login(username, password) {
@@ -27,7 +29,12 @@ function WaiterLogin() {
       return response.json()
     })
     .then((body) => {
+      
+      setWaiterToken(body.access_token);
+      saveWaiterToken(body.access_token); // save token in local storage
+      console.log( waiterToken)
       return body;
+      
     });
   }
   

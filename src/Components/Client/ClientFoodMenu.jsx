@@ -16,9 +16,8 @@ function ClientFoodMenu() {
   const [notes, setNotes] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [quantities, setQuantities] = useState({});
-  const user_token = getUserToken();
+  const userToken = getUserToken();
   const [totalQuantity, setTotalQuantity] = useState(0); // new state variable
-
   const [filter, setFilter] = useState({
     gluten: false,
     spicy: false,
@@ -27,6 +26,12 @@ function ClientFoodMenu() {
     lowcal: false,
     nuts: false
   });
+
+  const [customerId, setCustomerId] = useState('');
+  const [tableId, setTableId] = useState('');
+  const [waiterId, setWaiterId] = useState('');
+  // const [quantity, setQuantity] = useState('');
+
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
@@ -47,6 +52,22 @@ function ClientFoodMenu() {
       .then((response) => response.json())
       .then((data) => setMenuItems(data))
       .catch((error) => console.error(error));
+
+    // fetch cart items from backend and set state
+    fetch(`${SERVER_URL}/get_customer_info`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${userToken}`
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        setCustomerId(data.id);
+        setTableId(data.table_id);
+        setWaiterId(data.waiter_id);
+      })
+      .catch(error => console.error('Error:', error));
   }, []);
 
   const addToCart = (item) => {
@@ -65,7 +86,7 @@ function ClientFoodMenu() {
       setQuantities({ ...quantities, [item.name]: itemInCart.quantity + 1 });
       setTotalQuantity(totalQuantity + 1);
     } else {
-      const newCartItem = { name: item.name, price: item.price, quantity: 1 };
+      const newCartItem = { id: item.id, name: item.name, price: item.price, quantity: 1 };
       const newCartItems = [...cartItems, newCartItem];
       setCartItems(newCartItems);
       setQuantities({ ...quantities, [item.name]: 1 });
@@ -111,16 +132,48 @@ function ClientFoodMenu() {
   };
 
   const placeOrder = () => {
-    const items = cartItems.map(item => ({ item_id: item.name, quantity: item.quantity }));
+    const items = cartItems.map(item => ({ item_id: item.id, quantity: item.quantity }));
+
+    
+
     const order = {
       items: items,
-      notes: notes,
-      total_quantity: totalQuantity,
-      user_token: user_token
+      customer_id: customerId,
+      table_id: tableId,
+      waiter_id: waiterId,
     };
-    toast.success(`Order Placed!`);
+    // toast.success(`Order Placed!`);
     console.log(order)
-};
+
+    fetch(`${SERVER_URL}/new_order`, {
+      method: 'POST',
+      body: JSON.stringify({
+        "items": items,
+        "customer_id": customerId,
+        "table_id": tableId,
+        "waiter_id": waiterId
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then(data => {
+        if (data.message === "Order created successfully") {
+          toast.success("Order placed")
+          setCartItems([]);
+          setNotes({});
+          setQuantities({});
+          setTotalQuantity(0);
+        } else {
+          toast.error("An error occurred")
+        }
+      })
+      
+      .catch((error) => console.error(error));
+  };
+
+
 
   const handleApplyFilter = () => {
     console.log(filter);
