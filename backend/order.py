@@ -45,7 +45,13 @@ def create_order():
     
     # Get the next available order ID
     max_order_id = db.session.query(func.max(Orders.id)).scalar() or 0
-    next_id = max_order_id + 1
+
+    order_increment = Orders.query.filter_by(status=0, customer_id = customer_id).first()
+    if(order_increment == None):
+        next_id = max_order_id + 1
+    else:
+        next_id = order_increment.id
+    # next_id = max_order_id + 1
     
     # Iterate through the items and create a new record for each one
     for item in items:
