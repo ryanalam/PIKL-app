@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import ToastContainer from './RestNotification';
 
@@ -13,6 +13,21 @@ function RestReservations() {
     const [customerName, setCustomerName] = useState('');
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showErrorMessage, setShowErrorMessage] = useState(false);
+    const [reservations, setReservations] = useState([]);
+
+    useEffect(() => {
+        fetch(`${SERVER_URL}/get_reservations`)
+          .then(response => response.json())
+          .then(data => {setReservations(data); })
+          .catch(error => console.log(error));
+          console.log(reservations)
+      }, []);
+
+    useEffect(() => {
+        console.log(reservations);
+      }, [reservations]);
+
+
 
     const bookTable = async () => {
         console.log('booking table', tableId, startTime, numberOfPeople, customerName);
@@ -99,6 +114,8 @@ function RestReservations() {
                 </div>
             )}
         </div>
+
+
     )
 }
 
