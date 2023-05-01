@@ -30,20 +30,12 @@ bcrypt = Bcrypt(app)
 CORS(app,resources={r"/*":{"origins":"*"}})
 ma = Marshmallow(app)
 
-
-
-
-
-
-
 # Set up SQLAlchemy
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 app.app_context().push()
-
-
 
 # Define the customer model
 class Customer(db.Model):

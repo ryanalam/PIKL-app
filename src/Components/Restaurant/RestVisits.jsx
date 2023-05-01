@@ -56,6 +56,7 @@ function RestVisits() {
 
   return (
     <div className='container-sm'>
+        <ToastContainer />
       {tables.length > 0 && (
         <div>
           <select

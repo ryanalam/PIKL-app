@@ -14,6 +14,9 @@ import ClientDineIn from './Components/Client/ClientDineIn';
 import ClientBookATable from './Components/Client/ClientBookATable';
 import ClientRequestCar from './Components/Client/ClientRequestCar';
 import ClientFoodMenu from './Components/Client/ClientFoodMenu';
+import ClientRequestBill from './Components/Client/ClientRequestBill'
+
+
 
 //Restaurant Imports
 import RestLogin from './Components/Restaurant/RestLogin';
@@ -65,7 +68,8 @@ function App() {
           <Route path='/clientbookatable' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientBookATable /></Protected>} />
           <Route path='/clientrequestcar' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestCar /></Protected>} />
           <Route path='/clientfoodmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientFoodMenu /></Protected>} />
-
+          <Route path='clientrequestbill' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestBill /></Protected>} />
+          
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>
           <Route path='/restmenu' element={<RestMenu/>}/>
