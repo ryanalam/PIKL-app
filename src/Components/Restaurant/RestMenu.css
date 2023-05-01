@@ -31,6 +31,17 @@ div.reservations {
     overflow: hidden
  }
 
+ div.visits {
+   width:400px; /*width of your image*/
+   height:150px; /*height of your image*/
+   background-image:url('../../Pictures/visits.jpeg');
+   border-radius: 25px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden
+}
+
  h1 {
     color: white;
     font-family: Arial, sans-serif;

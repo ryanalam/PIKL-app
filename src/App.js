@@ -24,6 +24,7 @@ import RestMenu from './Components/Restaurant/RestMenu';
 import RestReservations from './Components/Restaurant/RestReservations';
 import RestFoodMenu from './Components/Restaurant/RestFoodMenu';
 import RestOrders from './Components/Restaurant/RestOrders';
+import RestVisits from './Components/Restaurant/RestVisits';
 
 //Kitchen Imports
 import KitchenQueue from './Components/Kitchen/KitchenQueue';
@@ -34,8 +35,7 @@ import StaffMenu from './Components/Staff/StaffMenu';
 import StaffStock from './Components/Staff/StaffStock';
 import {  getUserToken } from './LocalStorage';
 import Protected from './Protected';
-import WaiterNotifications from './Components/Client/WaiterNotifications';
-import CallWaiterButton from './Components/Client/CallWaiterButton';
+
 
 function App() {
   const [userToken, setUserToken] = useState(getUserToken());
@@ -61,10 +61,6 @@ function App() {
     
         <Routes> 
           {/* All client Pages */}
-
-          <Route path='/cwb' element={<CallWaiterButton/>}/>
-          <Route path='/wan' element={<WaiterNotifications/>}/>
-
           <Route path='/clientlogin' element={<ClientLogin/>}/>
           <Route path='/clientregister' element={<ClientRegister />} />
           <Route path='/clientmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientMenu /></Protected>} />
@@ -80,6 +76,7 @@ function App() {
           <Route path='/restreservations' element={<RestReservations/>}/>
           <Route path='/restfoodmenu' element={<RestFoodMenu/>}/>
           <Route path='/restorders' element={<RestOrders/>}/>
+          <Route path='/restvisits' element={<RestVisits/>}/>
 
           
           {/* All Kitchen Pages */}
