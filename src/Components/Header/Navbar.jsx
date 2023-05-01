@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { clearUserToken, getUserToken, saveUserToken } from '../../LocalStorage';
+import { clearUserToken, getUserToken, saveUserToken, clearTableNumber} from '../../LocalStorage';
 
 const Navbar = ({ onUserTokenChange }) => {
   const location = useLocation();
@@ -13,6 +13,7 @@ const Navbar = ({ onUserTokenChange }) => {
     setUserToken(null);
     saveUserToken(null);
     clearUserToken();
+    clearTableNumber();
     window.location.reload(false);
     navigate('/ClientLogin')
   }
