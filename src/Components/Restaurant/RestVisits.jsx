@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useEffect } from 'react';
+import ToastContainer from './RestNotification';
 
 
 var SERVER_URL = "http://127.0.0.1:3500";
@@ -24,6 +25,7 @@ function RestVisits() {
 
   return (
     <div className='container-sm'>
+        <ToastContainer />
       {tables.length > 0 && (
         <select className='form-select'>
           <option value=''>-- Select Table --</option>

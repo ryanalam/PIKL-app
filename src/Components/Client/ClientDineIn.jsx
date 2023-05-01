@@ -15,7 +15,7 @@ function ClientDineIn() {
     const [disabled, setDisabled] = useState(false);
     const location = useLocation();
     const username = location.state && location.state.username;
-    const [isLoading, setIsLoading] = useState(false);
+    const [setIsLoading] = useState(false);
     const tableNumber = 1; // replace with the desired table number for testing
 
     const handleClick = async () => {
@@ -23,10 +23,10 @@ function ClientDineIn() {
       setDisabled(true);
       setTimeout(() => {
         setClicked(false);
-      }, 60000); // 1 minute
+      }, 10000); // 1 minute
       setTimeout(() => {
         setDisabled(false);
-      }, 60000); // 1 minute
+      }, 10000); // 1 minute
       console.log('Button clicked');
       setIsLoading(true);
       try {

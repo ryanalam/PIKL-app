@@ -1,15 +1,17 @@
-import React from 'react';
+import {React} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './RestMenu.css';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import tableNumber from '../Client/WaiterNotifications'
+import ToastContainer from './RestNotification';
 
 function ClientLogin() {
     const navigate = useNavigate();
 
     return (
         <>
+            <>
+      <ToastContainer />
+    </>
             <div class="container-sm">
                 <div onClick={() => { navigate("/restreservations") }} class="container reservations">
                     <center><h1>Reservations</h1></center>

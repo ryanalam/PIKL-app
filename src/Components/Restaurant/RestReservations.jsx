@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
+import ToastContainer from './RestNotification';
 
 
 var SERVER_URL = "http://127.0.0.1:3500";
@@ -48,7 +49,7 @@ function RestReservations() {
         <div className="container-sm">
             <h2>Restaurant Reservations</h2>
             <br/>
-
+            <ToastContainer />
             <form onSubmit={handleSubmit}>
                 <div className="form-floating">
                     <input type="text" className="form-control" id="table-id" placeholder="Table ID" value={tableId} onChange={(e) => setTableId(e.target.value)} />
