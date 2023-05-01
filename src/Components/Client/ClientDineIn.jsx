@@ -4,6 +4,9 @@ import './ClientDineIn.css';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 
 function ClientDineIn() {
@@ -12,8 +15,10 @@ function ClientDineIn() {
     const [disabled, setDisabled] = useState(false);
     const location = useLocation();
     const username = location.state && location.state.username;
-  
-    function handleClick() {
+    const [isLoading, setIsLoading] = useState(false);
+    const tableNumber = 1; // replace with the desired table number for testing
+
+    const handleClick = async () => {
       setClicked(true);
       setDisabled(true);
       setTimeout(() => {
@@ -22,7 +27,18 @@ function ClientDineIn() {
       setTimeout(() => {
         setDisabled(false);
       }, 60000); // 1 minute
-    }
+      console.log('Button clicked');
+      setIsLoading(true);
+      try {
+        console.log('Sending request');
+        await axios.post('http://localhost:3500/waiter_notifications', { tableNumber });
+        console.log('Request sent successfully');
+        toast.success(`Table ${tableNumber} needs assistance!`);
+      } catch (error) {
+        console.error(error);
+      }
+      setIsLoading(false);
+    };
   
     useEffect(() => {
       if (disabled) {

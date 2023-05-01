@@ -7,13 +7,10 @@ function WaiterNotifications() {
   const [tableNumber, setTableNumber] = useState(null);
 
   useEffect(() => {
-    console.log('WaiterNotifications mounted');
     const intervalId = setInterval(async () => {
       try {
-        console.log('Polling for notifications');
         const response = await axios.get('http://localhost:3500/waiter_notifications');
         if (response.data.tableNumber) {
-          console.log(`Table ${response.data.tableNumber} needs assistance!`);
           toast.success(`Table ${response.data.tableNumber} needs assistance!`);
           setTableNumber(response.data.tableNumber);
         }
@@ -22,7 +19,6 @@ function WaiterNotifications() {
       }
     }, 10000);
     return () => {
-      console.log('Cleaning up interval');
       clearInterval(intervalId);
     };
   }, []);
