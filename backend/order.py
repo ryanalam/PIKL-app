@@ -6,22 +6,63 @@ order = Blueprint('order', __name__)
 
 
 
+from datetime import datetime, date, timedelta
+
+from itertools import groupby
+
 @app.route('/orders', methods=['GET'])
 def get_orders():
-    orders = Orders.query.all()
+    now = datetime.utcnow()
+    start_date = now.date()
+    end_date = start_date + timedelta(days=1)
+
+    orders = db.session.query(
+        Orders.id,
+        Orders.customer_id,
+        Orders.waiter_id,
+        Orders.table_id,
+        Orders.item_id,
+        Orders.quantity,
+        Date.date,
+        Customer.name.label('customer_name'),
+        Waiter.name.label('waiter_name'),
+        Item.name.label('item_name'),
+    ).join(
+        Date, Orders.date_id == Date.id
+    ).join(
+        Customer, Orders.customer_id == Customer.id, isouter=True
+    ).join(
+        Waiter, Orders.waiter_id == Waiter.id
+    ).join(
+        Item, Orders.item_id == Item.id
+    ).filter(
+        Date.date >= start_date, Date.date < end_date
+    ).order_by(
+        Orders.id
+    ).all()
+
     order_list = []
-    for order in orders:
+    for order_id, group in groupby(orders, lambda x: x.id):
         order_data = {
-            'id': order.id,
-            'customer_id': order.customer_id,
-            'waiter_id': order.waiter_id,
-            'table_id': order.table_id,
-            'date': order.date_id,
-            'item_id': order.item_id,
-            'quantity': order.quantity
+            'id': order_id,
+            'orders': []
         }
+        for order in group:
+            order_data['customer_id'] = order.customer_id
+            order_data['customer_name'] = order.customer_name
+            order_data['waiter_id'] = order.waiter_id
+            order_data['waiter_name'] = order.waiter_name
+            order_data['table_id'] = order.table_id
+            order_data['date'] = order.date.strftime('%Y-%m-%d %H:%M:%S')
+            order_data['orders'].append({
+                'item_id': order.item_id,
+                'item_name': order.item_name,
+                'quantity': order.quantity,
+            })
         order_list.append(order_data)
+
     return jsonify(order_list)
+
 
 
 @app.route('/new_order', methods=['POST'])
