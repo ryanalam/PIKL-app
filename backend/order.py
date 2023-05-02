@@ -78,16 +78,20 @@ def create_order():
         return jsonify({'message': 'Missing parameters'}), 400
     
     # Create a new date record and get its ID
-    now = datetime.datetime.now()
+    now = datetime.now()
     date = Date(date=now)
     db.session.add(date)
     db.session.commit()
     date_id = date.id
     
     # Get the next available order ID
-    max_order_id = db.session.query(func.max(Orders.id)).scalar() or 0
+    max_order_id = db.session.query(func.max(Orders.id)).scalar() 
+    #or0
 
-    order_increment = Orders.query.filter_by(status=0, customer_id = customer_id).first()
+    #order_increment = Orders.query.filter_by(status=0, customer_id = customer_id).first()
+    order_increment = Orders.query.filter_by(customer_id=customer_id, status=0).order_by(Orders.id.desc()).first()
+
+
     if(order_increment == None):
         next_id = max_order_id + 1
     else:
