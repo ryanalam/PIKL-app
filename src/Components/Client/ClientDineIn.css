@@ -1,18 +1,21 @@
 div.menupicture {
-    width:400px; /*width of your image*/
-    height:150px; /*height of your image*/
-    background-image:url('../../Pictures/menu.jpeg');
-    border-radius: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden
- }
+  width: 400px; /* width of your image */
+  height: 150px; /* height of your image */
+  background-image: url('../../Pictures/menu.jpeg');
+  background-size: cover;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
 
  div.billpicture {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/bill.jpeg');
+    background-size: cover;
     border-radius: 25px;
     display: flex;
     justify-content: center;
@@ -24,6 +27,8 @@ div.menupicture {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/valet.jpeg');
+    background-position: center top 10%;
+    background-size: cover;
     border-radius: 25px;
     display: flex;
     justify-content: center;
@@ -35,6 +40,8 @@ div.menupicture {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/feedback.jpeg');
+    background-size: cover;
+    background-position: center top 40%;
     border-radius: 25px;
     display: flex;
     justify-content: center;

@@ -24,6 +24,8 @@ div.dineinpicture {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/bookatable.jpeg');
+    background-size: cover;
+    background-position: center bottom 20%;
     border-radius: 25px;
     display: flex;
     justify-content: center;

@@ -21,7 +21,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beccaroni@127.0.0.1:3306/RMSDB'
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
