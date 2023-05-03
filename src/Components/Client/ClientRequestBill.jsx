@@ -5,6 +5,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './ClientDineIn.css';
 
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_51N2We6DJArv5SXb4GD7CQO3RMqRZNHePjs1mARFr7EHT85aAwLk4XS7mzvZoztzRuja9aNiOGzjugd3OpieyoqDG00Z1d4eavc');
+
 
 const SERVER_URL = 'http://127.0.0.1:3500';
 
@@ -43,13 +47,53 @@ const Bill = () => {
   };
 
 
-  const handleCheckout = () => {
-    const cashOption = document.getElementById('cash');
-    if (cashOption.checked) {
-      handleClick();
-      toast.success('Waiter is on the way to collect the bill');
+  const handleCashCheckout = async () => {
+    try {
+      await axios.post(`${SERVER_URL}/cash_checkout`, { order_id: orderId, table_id: tableNumber }, {
+        headers: { 'Authorization': `Bearer ${userToken}` }
+      });
+      toast.success('Checkout successful. Payment method: Cash');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to process cash payment.');
     }
   };
+  
+  const handleVisaCheckout = async () => {
+    try {
+      const response = await axios.post(`${SERVER_URL}/pay`, { order_id: orderId }, {
+        headers: { 'Authorization': `Bearer ${userToken}` }
+      });
+      const sessionId = response.data.id;
+  
+      // Handle Stripe payment process
+      const stripe = await stripePromise;
+      const result = await stripe.redirectToCheckout({ sessionId: sessionId });
+  
+      if (result.error) {
+        toast.error('Payment failed.');
+      } else {
+        toast.success('Checkout successful. Payment method: Visa');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to process visa payment.');
+    }
+  };
+  
+  
+  const handleCheckout = () => {
+    const cashOption = document.getElementById('cash');
+    const visaOption = document.getElementById('visa');
+    if (cashOption.checked) {
+      handleCashCheckout();
+    } else if (visaOption.checked) {
+      handleVisaCheckout();
+    } else {
+      toast.error('Please select a payment method.');
+    }
+  };
+  
 
 
   useEffect(() => {
