@@ -33,7 +33,7 @@ def create_order():
     items = data.get('items')
     
     
-    if not customer_id or not waiter_id or not  table_id or not items:
+    if not waiter_id or not  table_id or not items:
         return jsonify({'message': 'Missing parameters'}), 400
     
     # Create a new date record and get its ID

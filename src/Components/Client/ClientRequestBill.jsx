@@ -77,6 +77,7 @@ const Bill = () => {
             setWaiterName(data.waiter);
             setTotalAmount(data.total_amount);
             setItems(data.items);
+            console.log("TABLE:", tableNumber);
           })
           .catch((error) => console.error(error));
       })
