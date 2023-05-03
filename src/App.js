@@ -17,6 +17,7 @@ import ClientFoodMenu from './Components/Client/ClientFoodMenu';
 import ClientRequestBill from './Components/Client/ClientRequestBill'
 import ClientFeedback from './Components/Client/ClientFeedback'
 import Qrcode from './Components/Client/Qrcode';
+import PaymentButton from './Components/Client/PaymentButton';
 
 
 
@@ -73,6 +74,7 @@ function App() {
           <Route path='clientrequestbill' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestBill /></Protected>} />
           <Route path='clientfeedback' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientFeedback /></Protected>} />
           <Route path='qrcode' element={<Protected onUserTokenChange={handleUserTokenChange}><Qrcode /></Protected>} />
+          <Route path='paymentbutton' element={<Protected onUserTokenChange={handleUserTokenChange}><PaymentButton /></Protected>} />
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>
           <Route path='/restmenu' element={<RestMenu/>}/>
