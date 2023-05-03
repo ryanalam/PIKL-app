@@ -44,4 +44,48 @@ def delete_ingredient(ingredient_id):
     
     return jsonify({'message': 'Ingredient deleted successfully.'})
 
+@app.route('/get_stock_levels', methods=['GET'])
+def get_stock_levels():
+    # Retrieve the stock levels from the database using SQLAlchemy
+    stock_levels = StockFact.query.all()
+
+    # Convert the stock levels to a dictionary format
+    stock_levels_dict = []
+    for level in stock_levels:
+        ingredient = Ingredient.query.filter_by(id = level.ingredient_id ).first()
+        
+        
+        stock_level_dict = {
+            'date_id': level.date_id,
+            'item_id': level.item_id,
+            'ingredient_id': level.ingredient_id,
+            'stock_level':int(((level.stock_level)/500)*100),
+            'usage_quantity': level.usage_quantity,
+            'percentage': level.stock_level,
+            'ingredient_name': ingredient.name
+        }
+        stock_levels_dict.append(stock_level_dict)
+
+    # Return the stock levels as JSON
+    return jsonify(stock_levels_dict)
+
+
+@app.route('/add_stock', methods =['PUT'])
+def add_stock():
+    
+    ingredient_name = request.json['ingredient_name']
+    add_input = request.json['stock_input']
+    
+    ingredient = Ingredient.query.filter_by(name = ingredient_name).first()
+    
+    
+    stock = StockFact.query.filter_by(ingredient_id = ingredient.id).first()
+    
+    stock.stock_level = stock.stock_level + add_input
+    
+    db.session.commit()
+    
+    
+    return jsonify({'message': 'Stock updated successfully.'}), 200
+
 

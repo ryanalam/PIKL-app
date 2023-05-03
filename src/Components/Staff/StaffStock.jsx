@@ -1,98 +1,3 @@
-// import React from 'react';
-// import 'bootstrap/dist/css/bootstrap.css';
-// import './StaffStock.css'
-// import ProgressBar from 'react-bootstrap/ProgressBar';
-// import  { useState, useEffect } from 'react';
-
-// import 'react-toastify/dist/ReactToastify.css';
-
-
-
-// const SERVER_URL = 'http://127.0.0.1:3500';
-
-// function StaffStock() {
-//     const now = 100;
-    
-//     const [stocklevel,setstocklevel ] = useState('');
-//     const [stockname,setstockname] = useState('');
-
-
-
-//     useEffect(() => {
-       
-        
-//             fetch(`${SERVER_URL}/get_stock_levels`, {
-//                 method: 'GET',
-//                 headers: {
-//                   'Content-Type': 'application/json',
-//                 },
-//               })
-//                 .then((response) => response.json())
-//                 .then(data => {
-    
-//                     setstocklevel(data.stock_level);
-//                     setstockname(data.name);
-//                 })
-//                 .catch((error) => console.error(error));
-    
-//                 console.log(stocklevel);
-//                 console.log(stockname);
-             
-        
-//         }, []);
-
-
-//     return (
-//         <div className='container-sm '>
-//             <h3>All Ingredients</h3>
-//             <label>{stockname}
-//                 <ProgressBar now={stocklevel} label={`${stocklevel}%`} />
-//             </label>
-
-//             <br></br>
-//             <hr></hr>
-//             <br></br>
-
-//             <h3>Edit Quantity</h3>
-//             <select class="form-select" aria-label="Default select example">
-//                 <option selected>Choose ingredient to add the new quantity</option>
-//                 <option value="1">One</option>
-//                 <option value="2">Two</option>
-//                 <option value="3">Three</option>
-//             </select>
-//             <br></br>
-//             <div class="input-group mb-3">
-//                 <input type="number" class="form-control" placeholder="Quantity" aria-label="Username" aria-describedby="basic-addon1" />
-//             </div>
-//             <button type="button" class="btn btn-primary">Edit Quantity</button>
-
-//             <br></br>
-//             <hr></hr>
-//             <br></br>
-
-//             <h3>Add new ingredient with it's quantity</h3>
-//             <div class="input-group mb-3">
-//                 <input type="text" class="form-control" placeholder="Ingredient name" aria-label="Username" />
-//                 <span class="input-group-text">@</span>
-//                 <input type="number" class="form-control" placeholder="Quantity" aria-label="Server" />
-//                 <br></br>
-//             </div>
-//             <button type="button" class="btn btn-primary">Add ingredient</button>
-            
-//             <br></br>
-//             <hr></hr>
-//             <br></br>
-
-//         </div>
-        
-
-//     )
-// }
-// export default StaffStock;
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './StaffStock.css'
@@ -113,39 +18,41 @@ function StaffStock() {
         fetch(`${SERVER_URL}/get_stock_levels`, {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
         })
-        .then((response) => response.json())
-        .then(data => {
-            setStockData(data);
-        })
-        .catch((error) => console.error(error));
+            .then((response) => response.json())
+            .then(data => {
+                setStockData(data);
+            })
+            .catch((error) => console.error(error));
     }, []);
 
     const handleEditQuantity = () => {
         fetch(`${SERVER_URL}/add_stock`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 ingredient_name: selectedIngredient,
                 stock_input: newQuantity,
             }),
         })
-        .then((response) => response.json())
-        .then(data => {
-            toast.success(data.message);
-        })
-        .catch((error) => console.error(error));
+            .then((response) => response.json())
+            .then(data => {
+                toast.success(data.message);
+                window.location.reload();
+            }
+            )
+            .catch((error) => console.error(error));
     };
 
     const handleAddIngredient = () => {
         fetch(`${SERVER_URL}/add_ingredient`, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 name: newIngredientName,
@@ -154,23 +61,26 @@ function StaffStock() {
                 stock: newIngredientQuantity,
             }),
         })
-        .then((response) => response.json())
-        .then(data => {
-            toast.success(data.message);
-        })
-        .catch((error) => console.error(error));
+            .then((response) => response.json())
+            .then(data => {
+                toast.success(data.message);
+            })
+            .catch((error) => console.error(error));
     };
-    
+
 
     return (
-        <div className='container-sm '>
-            <h3>All Ingredients</h3>
-            {stockData.map(stock => (
-                <div key={stock.ingredient_id} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexGrow: 1 }}>
-                        {stock.ingredient_name}
-                        <ProgressBar style={{ flexShrink: 1 }} now={stock.percentage} label={`${stock.stock_level}%`} />
+        <div className='container-sm' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h3 style={{ marginBottom: '1em' }}>All Ingredients</h3>
+            {stockData.map((stock, index) => (
+                <div key={stock.ingredient_id} style={{ display: 'flex', flexDirection: 'column', marginBottom: '1em' }}>
+                    <label style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', fontSize: '1em' }}>
+                        <span style={{ marginRight: '1em', fontSize: '1.5em', textAlign: 'left' }}>{stock.ingredient_name}</span>
+                        <div style={{ flexShrink: 1, minWidth: '500px', height: '20px'}}>
+                            <ProgressBar style={{ height: '100%' }} now={stock.stock_level} label={`${stock.stock_level}%`} />
+                        </div>
                     </label>
+                    {index !== stockData.length - 1 && <hr style={{ width: '100%', margin: '0.5em 0' }} />}
                 </div>
             ))}
 
@@ -178,7 +88,7 @@ function StaffStock() {
             <hr></hr>
             <br></br>
 
-            <h3>Edit Quantity</h3>
+            <h3>Add Quantity</h3>
             <select
                 class="form-select"
                 value={selectedIngredient}
@@ -197,12 +107,13 @@ function StaffStock() {
                     type="number"
                     class="form-control"
                     placeholder="Quantity"
+                    min="1"
                     value={newQuantity}
                     onChange={(e) => setNewQuantity(Number(e.target.value))}
                 />
             </div>
             <button type="button" class="btn btn-primary" onClick={handleEditQuantity}>
-                Edit Quantity
+                Add Quantity
             </button>
 
             <br></br>
@@ -219,11 +130,11 @@ function StaffStock() {
                     value={newIngredientName}
                     onChange={(e) => setNewIngredientName(e.target.value)}
                 />
-                <span class="input-group-text">@</span>
                 <input
                     type="number"
                     class="form-control"
                     placeholder="Quantity"
+                    min="1"
                     value={newIngredientQuantity}
                     onChange={(e) => setNewIngredientQuantity(Number(e.target.value))}
                 />
@@ -243,4 +154,4 @@ function StaffStock() {
 }
 export default StaffStock;
 
-           
+
