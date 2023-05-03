@@ -66,9 +66,9 @@ function RestVisits() {
           alert('Visit created successfully');
   
           // generate QR code for selected table
-          const url = `${SERVER_URL}/table/${selectedTable}`;
+          const url = `${selectedTable}`;
           QRCode.toDataURL(url, {
-            width: 800,
+            width: 400,
             margin: 2,
             color: {
               dark: '#335383FF',
