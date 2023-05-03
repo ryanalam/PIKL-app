@@ -4,6 +4,7 @@ import './ClientBookATable.css';
 import { useNavigate } from 'react-router-dom';
 import { getUserToken } from '../../LocalStorage';
 import { Navigate } from 'react-router-dom';
+import floorplan from '../../Pictures/floorplan.jpeg'
 
 var SERVER_URL = "http://127.0.0.1:3500";
 
@@ -58,17 +59,13 @@ function ClientBookATable() {
         }
     }
 
-    // var radio = document.querySelector('.btn-group');
-    // var timeofarrival = document.getElementById('timeofarrival');
-
-    // radio.addEventListener('change', function(e) {
-    //   if(!e.target.matches('input[type=radio]')) return;
-
-    //   timeofarrival.innerText = e.target.value;
-    // });
     return (
+
         <div class="container-sm">
             <h2>Reserve a Table</h2>
+            <img src={floorplan} style={{width:"100%", height:"auto"}} />
+
+            <br></br>
             <br></br>
 
             <div class="form-floating">
