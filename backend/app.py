@@ -21,7 +21,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beccaroni@127.0.0.1:3306/RMSDB'
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -222,8 +222,8 @@ app.app_context().push()
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
-app.config["MAIL_USERNAME"] = "piklauth@gmail.com"
-app.config["MAIL_PASSWORD"] = "rhwmgdajvwsqhqaw"
+app.config["MAIL_USERNAME"] = "piklalamoutrabboud@gmail.com"
+app.config["MAIL_PASSWORD"] = "zkkvjnhwbfianokt"
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 mail = Mail(app)
@@ -599,6 +599,8 @@ def customer_signup():
     msg.body = "Your link to confirm your account is {}".format(link)
     mail.send(msg)
 
+    dict[token] = False
+
     helper(token, username, hashed_password, name, email, phone)
 
     return jsonify({'message': 'Confirmation email sent. Please check your inbox.'}), 200
@@ -636,13 +638,13 @@ def confirm_email(token):
     dict[token] = True
 
     response = make_response(jsonify({'access_token': token}))
-    response.headers['Location'] = "http://localhost:3000/clientmenu"
+    response.headers['Location'] = "http://localhost:3000/clientlogin"
     response.status_code = 302
     return response
     
 
-def helper2():
-    return redirect("http://localhost:3000/clientmenu")
+# def helper2():
+#     return redirect("http://localhost:3000/clientmenu")
 
 
 
@@ -712,7 +714,17 @@ def get_waiter_notifications():
 
 
 
-
+@app.route('/decode_waiter', methods=['GET'])
+def decode_waiter():
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+    
+        if token:
+            waiterid = decode_token(token)
+            query = Waiter.query.get(waiterid['sub']).id
+    except:
+        return jsonify({'message': 'Please login'}), 400
+    return jsonify({'waiter_id': query}), 200
 
 from stock_management import stock_management
 from order import order

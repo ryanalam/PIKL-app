@@ -2,6 +2,8 @@ div.insights {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/Insights.jpeg');
+    background-size: cover;
+    background-position: center bottom;
     border-radius: 25px;
     display: flex;
     justify-content: center;
@@ -13,6 +15,7 @@ div.insights {
     width:400px; /*width of your image*/
     height:150px; /*height of your image*/
     background-image:url('../../Pictures/Stock.jpeg');
+    background-size: cover;
     border-radius: 25px;
     display: flex;
     justify-content: center;
@@ -24,6 +27,7 @@ div.insights {
    width:400px; /*width of your image*/
    height:150px; /*height of your image*/
    background-image:url('../../Pictures/editmenu.jpeg');
+   background-size: cover;
    border-radius: 25px;
    display: flex;
    justify-content: center;
@@ -34,7 +38,9 @@ div.insights {
 div.employees {
    width:400px; /*width of your image*/
    height:150px; /*height of your image*/
-   background-image:url('../../Pictures/employees.avif');
+   background-image:url('../../Pictures/employees.jpeg');
+   background-size: cover;
+   background-position: center bottom 60%;
    border-radius: 25px;
    display: flex;
    justify-content: center;
