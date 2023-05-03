@@ -1,8 +1,20 @@
-from flask import Blueprint
-import stripe
+from flask import Blueprint, abort
+from sqlalchemy import and_
 from app import *
 
 order = Blueprint('order', __name__)
+
+# Set your secret key. Remember to switch to your live secret key in production.
+# See your keys here: https://dashboard.stripe.com/apikeys
+import stripe
+stripe.api_key = "sk_test_51N2We6DJArv5SXb4hbWCyVH2tEGG1MrdJhmYcMlwu6CoCfZiE4W081N9JDN4gX7216ehYPBz5ddRmEW7zKgIJgau00eh2kkzJ4"
+
+
+
+stripe.PaymentIntent.create(amount=500, currency="gbp", payment_method="pm_card_visa")
+
+
+
 
 
 
@@ -12,7 +24,7 @@ from itertools import groupby
 
 @app.route('/orders', methods=['GET'])
 def get_orders():
-    now = datetime.utcnow()
+    now = datetime.now()
     start_date = now.date()
     end_date = start_date + timedelta(days=1)
 
@@ -62,6 +74,9 @@ def get_orders():
         order_list.append(order_data)
 
     return jsonify(order_list)
+
+
+
 
 
 
@@ -197,79 +212,59 @@ def edit_order(order_id):
     
     return jsonify({'message': 'Order updated successfully'}), 200
 
-@app.route('/get_menu', methods=['GET'])
-def get_menu():
-    menu = Item.query.all()
-    menu_list = []
-    for item in menu:
+
+
+
+@app.route('/bill/<int:order_id>', methods=['GET'])
+def print_bill(order_id):
+    # Join the Date table to the Orders table to get the date information
+    order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
+
+    # Check if the order exists
+    if order is None:
+        return jsonify({'error': 'Order not found'}), 404
+
+    # Get the customer information
+    customer = Customer.query.filter_by(id=order.Orders.customer_id).first()
+
+    # Get the waiter information
+    waiter = Waiter.query.filter_by(id=order.Orders.waiter_id).first()
+
+    # Get the table information
+    table = Tables.query.filter_by(id=order.Orders.table_id).first()
+
+    # Get all the items for the order
+    items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
+
+    # Calculate the total amount
+    total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
+
+    # Create a dictionary to store the bill information
+    bill = {
+        'order_id': order.Orders.id,
+        'date': order.date.strftime('%Y-%m-%d %H:%M:%S'),
+        'customer': customer.name,
+        'table_number': table.number,
+        'waiter': waiter.name,
+        'items': [],
+        'total_amount': total_amount
+    }
+
+    # Add each item to the 'items' list in the bill dictionary
+    for item in items:
         item_data = {
-            'id': item.id,
-            'name': item.name,
-            'price': item.price,
-            'description': item.description,
-            'calories': item.calories,
-            'category': item.category,
-            'image_path': item.image_path
+            'name': item.Item.name,
+            'quantity': item.Orders.quantity,
+            'price_per_unit': item.Item.price,
+            'total_amount': item.Orders.quantity * item.Item.price
         }
-        menu_list.append(item_data)
-    return jsonify(menu_list)
+        bill['items'].append(item_data)
+
+    return jsonify(bill)
 
 
-# @app.route('/get_menu_filter', methods=['GET'])
-# def get_menu_filter():
-#     vegan=request.json['vegan']
-#     vegetarian=request.json['vegetarian']
-#     gluten=request.json['gluten']
-#     dairy=request.json['dairy']
-#     spicy=request.json['spicy']
-#     lowcal=request.json['lowcal']
-
-#     filters = {'gluten': False, 'spicy': False, 'vegetarian': False, 'dairy': False, 'lowcal': False}
 
 
-#     if gluten:
-#         filters['gluten'] = True
-
-#     if spicy:
-#         filters['spicy'] = True
-
-#     if vegetarian:
-#         filters['vegetarian'] = True
-
-#     if dairy:
-#         filters['dairy'] = True
-
-#     if lowcal:
-#         filters['lowcal'] = True
-
-#     print(filters)
-
-#     output = ""
-#     for key, value in filters.items():
-#         if value:
-#             output += key[0].upper()
-#         else:
-#             output += ""
-
-#     print(output)
-
-#     menu = Item.query.filter(output in Item.filters).all()
-#     menu_list = []
-#     for item in menu:
-#         item_data = {
-#             'id': item.id,
-#             'name': item.name,
-#             'price': item.price,
-#             'description': item.description,
-#             'calories': item.calories,
-#             'category': item.category,
-#             'image_path': item.image_path
-#         }
-#         menu_list.append(item_data)
-#     return jsonify(menu_list)
-
-
-from sqlalchemy import or_, and_
 
 @app.route('/get_menu_filter', methods=['POST'])
 def get_menu_filter():
@@ -326,112 +321,33 @@ def get_menu_filter():
 #lowcal L
 
 
-# @app.route('/bill/<int:order_id>', methods=['GET'])
-# def print_bill(order_id):
-#     # Join the Date table to the Orders table to get the date information
-#     order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
-
-#     # Check if the order exists
-#     if order is None:
-#         return jsonify({'error': 'Order not found'}), 404
-
-#     # Get the customer information
-#     customer = Customer.query.filter_by(id=order.Orders.customer_id).first()
-
-#     # Get the waiter information
-#     waiter = Waiter.query.filter_by(id=order.Orders.waiter_id).first()
-
-#     # Get the table information
-#     table = Tables.query.filter_by(id=order.Orders.table_id).first()
-
-#     # Get all the items for the order
-#     items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
-
-#     # Calculate the total amount
-#     total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
-
-#     # Format the bill
-#     bill = f'--------------------------\n' \
-#            f'Order ID: {order.Orders.id}\n' \
-#            f'Date: {order.date}\n' \
-#         #    f'--------------------------\n'
-           
-#     bill += f'Customer: {customer.name}\n' \
-#             f'Table number: {table.number}\n' \
-#             f'Waiter: {waiter.name}\n' \
-#                 f'--------------------------\n'
-#             # f'Total bill amount: {total_amount}\n' \
-    
-
-#     for item in items:
-#         bill += f'Item: {item.Item.name}\n' \
-#                 f'Quantity: {item.Orders.quantity}\n' \
-#                 f'Price per unit: {item.Item.price}\n' \
-#                 f'Total amount: {item.Orders.quantity * item.Item.price}\n' \
-#                 f'--------------------------\n'
-                
-#     bill += f'Total bill amount: {total_amount}\n' \
-#             f'--------------------------\n'
-
-#     print(bill)
-
-#     return bill
-
-@app.route('/bill/<int:order_id>', methods=['GET'])
-def print_bill(order_id):
-    # Join the Date table to the Orders table to get the date information
-    order = db.session.query(Orders, Date.date).join(Date).filter(Orders.id == order_id).first()
-
-    # Check if the order exists
-    if order is None:
-        return jsonify({'error': 'Order not found'}), 404
-
-    # Get the customer information
-    customer = Customer.query.filter_by(id=order.Orders.customer_id).first()
-
-    # Get the waiter information
-    waiter = Waiter.query.filter_by(id=order.Orders.waiter_id).first()
-
-    # Get the table information
-    table = Tables.query.filter_by(id=order.Orders.table_id).first()
-
-    # Get all the items for the order
-    items = db.session.query(Orders, Item).join(Item).filter(Orders.id == order_id).all()
-
-    # Calculate the total amount
-    total_amount = sum(item.Orders.quantity * item.Item.price for item in items)
-
-    # Create a dictionary to store the bill information
-    bill = {
-        'order_id': order.Orders.id,
-        'date': order.date.strftime('%Y-%m-%d %H:%M:%S'),
-        'customer': customer.name,
-        'table_number': table.number,
-        'waiter': waiter.name,
-        'items': [],
-        'total_amount': total_amount
-    }
-
-    # Add each item to the 'items' list in the bill dictionary
-    for item in items:
+@app.route('/get_menu', methods=['GET'])
+def get_menu():
+    menu = Item.query.all()
+    menu_list = []
+    for item in menu:
         item_data = {
-            'name': item.Item.name,
-            'quantity': item.Orders.quantity,
-            'price_per_unit': item.Item.price,
-            'total_amount': item.Orders.quantity * item.Item.price
+            'id': item.id,
+            'name': item.name,
+            'price': item.price,
+            'description': item.description,
+            'calories': item.calories,
+            'category': item.category,
+            'image_path': item.image_path
         }
-        bill['items'].append(item_data)
+        menu_list.append(item_data)
+    return jsonify(menu_list)
 
-    return jsonify(bill)
+
 
 
 @app.route('/check_table_availability', methods=['GET'])
 def check_table_availability():
     # Get the current time
-    now = datetime.datetime.now()
+    now = datetime.now()
 
     # Calculate the approximate end time for reservations made now
-    approx_end_time = now + datetime.timedelta(hours=2)
+    approx_end_time = now + timedelta(hours=2)
 
     # Get all reservations that are ongoing, start after the current time or end within the next 2 hours
     reservations = Reservation.query.filter(((Reservation.end_time == None) | (Reservation.end_time > now)) & (Reservation.start_time < approx_end_time)).all()
@@ -453,7 +369,7 @@ def create_visit():
     
     customer_id = request.json.get('customer_id', None)
     table_id = request.json['table_id']
-    time = datetime.datetime.now()
+    time = datetime.now()
 
     table = Tables.query.filter_by(id=table_id).first()
     if table.status == True:
@@ -483,6 +399,31 @@ def create_visit():
         'table_id': visit.table_id,
         'time': visit.time
     })
+    
+@app.route('/edit_visit', methods=['PUT'])
+def edit_visit():
+    table_id = request.json['table_id']
+    token = request.headers.get('Authorization').split(' ')[1]
+    try:
+        if token:
+            t = decode_token(token)
+            customer_id = t['sub']
+            
+            # get the visit record with the given table_id
+            visit = Visit.query.filter_by(table_id=table_id).first()
+            if visit:
+                # update the customer_id for the visit
+                visit.customer_id = customer_id
+                db.session.commit()
+                return jsonify({'message': 'Visit updated successfully'})
+            else:
+                return jsonify({'message': 'Visit not found'}), 404
+        else:
+            return jsonify({'message': 'Please login'}), 400
+    except:
+        return jsonify({'message': 'An error occurred'}), 500
+
+
 
 
 
@@ -540,7 +481,8 @@ def pay():
     except stripe.error.CardError as e:
         error = e.error
         return jsonify({'message': f"Payment failed: {error['message']}"})
-    
+
+
 
 @app.route('/get_customer_info', methods=['GET'])
 def get_customer_info():

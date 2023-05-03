@@ -19,3 +19,25 @@ div.insights {
     align-items: center;
     overflow: hidden
  }
+
+ div.editmenu {
+   width:400px; /*width of your image*/
+   height:150px; /*height of your image*/
+   background-image:url('../../Pictures/editmenu.jpeg');
+   border-radius: 25px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden
+}
+
+div.employees {
+   width:400px; /*width of your image*/
+   height:150px; /*height of your image*/
+   background-image:url('../../Pictures/employees.avif');
+   border-radius: 25px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden
+}

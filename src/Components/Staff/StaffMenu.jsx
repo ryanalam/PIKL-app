@@ -20,6 +20,18 @@ function StaffMenu() {
 
             <br></br>
 
+            <div onClick={() =>{navigate("/staffeditmenu")}} class="container editmenu">
+            <center><h1>Edit Menu</h1></center>
+            </div>
+
+            <br></br>
+
+            <div onClick={() =>{navigate("/staffemployees")}} class="container employees">
+            <center><h1>Employees</h1></center>
+            </div>
+
+            <br></br>
+
             
 
 

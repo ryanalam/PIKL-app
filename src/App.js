@@ -5,6 +5,8 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter, Route, Routes} from "react-router-dom";
 import * as React from 'react';
 import { useState } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 // Client Imports
 import ClientLogin from './Components/Client/ClientLogin'
@@ -35,6 +37,10 @@ import KitchenQueue from './Components/Kitchen/KitchenQueue';
 import StaffInsights from './Components/Staff/StaffInsights';
 import StaffMenu from './Components/Staff/StaffMenu';
 import StaffStock from './Components/Staff/StaffStock';
+import StaffEditMenu from './Components/Staff/StaffEditMenu';
+import StaffEmployees from './Components/Staff/StaffEmployees';
+
+
 import {  getUserToken } from './LocalStorage';
 import Protected from './Protected';
 
@@ -60,6 +66,7 @@ function App() {
                 
         />
       </header>
+      <ToastContainer />
     
         <Routes> 
           {/* All client Pages */}
@@ -89,6 +96,8 @@ function App() {
           <Route path = '/staffinsights' element={<StaffInsights/>}></Route>
           <Route path = '/staffmenu' element={<StaffMenu/>}></Route>
           <Route path = '/staffstock' element={<StaffStock/>}></Route>
+          <Route path = '/staffeditmenu' element={<StaffEditMenu/>}></Route>
+          <Route path = '/staffemployees' element={<StaffEmployees/>}></Route>
 
 
 

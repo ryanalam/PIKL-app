@@ -40,7 +40,7 @@ function ClientDineIn() {
       });
       const data = await response.json();
       console.log('Response received:', data);
-      toast.success(`Table ${tableNumber} needs assistance!`);
+      toast.success(`Waiter Called`);
     } catch (error) {
       console.error(error);
     }

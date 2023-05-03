@@ -35,9 +35,15 @@ const Navbar = ({ onUserTokenChange }) => {
   }, []);
 
   const hideBackButton = () => {
-    const excludedPaths = ['/clientlogin', '/clientregister', '/clientmenu'];
+    const excludedPaths = ['/clientlogin', '/clientregister', '/clientmenu','/clientdinein'];
     return !excludedPaths.includes(location.pathname);
   }
+
+  const hideLogOutButton = () => {
+    const excludedPaths = ['/restlogin','/restmenu', '/restfoodmenu', '/restorders','/restvisits','/restreservations'];
+    return !excludedPaths.includes(location.pathname);
+  }
+  
   
 
   return (
@@ -53,7 +59,7 @@ const Navbar = ({ onUserTokenChange }) => {
               {userToken != null && (
                 <p>{username && ` ${username}`}</p>
               )}
-              {userToken != null && (
+              {userToken != null && hideLogOutButton() && (
                 <button className="btn btn-danger" onClick={logout}>Logout </button>
               )}
             </span>

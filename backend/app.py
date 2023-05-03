@@ -21,7 +21,7 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beccaroni@127.0.0.1:3306/RMSDB'
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@127.0.0.1:3306/RMSDB'
 
 
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -30,12 +30,20 @@ bcrypt = Bcrypt(app)
 CORS(app,resources={r"/*":{"origins":"*"}})
 ma = Marshmallow(app)
 
+
+
+
+
+
+
 # Set up SQLAlchemy
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 app.app_context().push()
+
+
 
 # Define the customer model
 class Customer(db.Model):
@@ -93,7 +101,7 @@ class Waiter(db.Model):
 
 class Date(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.Date, nullable=False)
 
 class Tables(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -145,22 +153,7 @@ class Reservation(db.Model):
             number_of_people=number_of_people,
             customer_name=customer_name
         ) 
- 
-class ReservationSchema(ma.Schema):
-    class Meta:
-        fields = (
-            "id",
-            "customer_id",
-            "table_id",
-            "start_time",
-            "end_time",
-            "number_of_people",
-            "customer_name"
-        )
-    model = Reservation
     
-reservation_schema = ReservationSchema()   
-reservations_schema = ReservationSchema(many=True)
 
     
 class Stock(db.Model):
@@ -714,12 +707,10 @@ def get_waiter_notifications():
     else:
         time.sleep(1)
         return {}
-    
 
-@app.route('/get_reservations', methods=['GET'])
-def get_reservations():
-    reservations = Reservation.query.all()
-    return jsonify(reservations_schema.dump(reservations))
+
+
+
 
 
 
