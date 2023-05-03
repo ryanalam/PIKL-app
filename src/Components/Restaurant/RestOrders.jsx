@@ -30,12 +30,12 @@ function RestOrders() {
   const renderOrders = () => {
     return orders.map(order => {
       return (
-        <div className='container-sm'>
+        <div className='container-sm'style={{justifyContent:"center", display:"flex"}}>
           <div class="card-group">
-            <div className="col-4 mb-4" key={order.id}>
-              <div className="card">
+            <div className="mb-5" key={order.id}>
+              <div className="card text-center border-primary" style={{width:"300px",display:"flex"}}>
                 <div className="card-body">
-                  <h5 className="card-title">Order {order.id}</h5>
+                  <h5 className="card-title">Order #{order.id}</h5>
                   <p className="card-text">Customer: {order.customer_name}</p>
                   <p className="card-text">Waiter: {order.waiter_name}</p>
                   <p className="card-text">Table: {order.table_id}</p>

@@ -41,6 +41,8 @@ import StaffStock from './Components/Staff/StaffStock';
 import StaffEditMenu from './Components/Staff/StaffEditMenu';
 import StaffEmployees from './Components/Staff/StaffEmployees';
 
+//Valet Imports
+import ValetGetCar from './Components/Valet/ValetGetCar';
 
 import {  getUserToken } from './LocalStorage';
 import Protected from './Protected';
@@ -100,6 +102,10 @@ function App() {
           <Route path = '/staffstock' element={<StaffStock/>}></Route>
           <Route path = '/staffeditmenu' element={<StaffEditMenu/>}></Route>
           <Route path = '/staffemployees' element={<StaffEmployees/>}></Route>
+
+          {/* All Valet Pages */}
+          <Route path = '/valetgetcar' element={<ValetGetCar/>}></Route>
+
 
 
 
