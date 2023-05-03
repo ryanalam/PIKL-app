@@ -1,2 +1,10 @@
-p.sunpicture{
+div.floorplan {
+    width: 680px;
+    height: 425px;
+    background-image: url('../../Pictures/floorplan.jpeg');
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
 }

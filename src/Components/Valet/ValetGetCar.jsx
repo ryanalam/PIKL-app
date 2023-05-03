@@ -10,12 +10,6 @@ function ValetGetCar() {
                     <li class="list-group-item">Get car #</li>
                     <button className='btn btn-primary'>Done</button>
                     <br></br>
-                    <li class="list-group-item">Get car #</li>
-                    <button className='btn btn-primary'>Done</button>
-                    <br></br>
-                    <li class="list-group-item">Get car #</li>
-                    <button className='btn btn-primary'>Done</button>
-                    <br></br>
                 </ul>
             </div>
         </div>

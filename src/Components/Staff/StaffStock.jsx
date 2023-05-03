@@ -76,11 +76,10 @@ function StaffStock() {
                 <div key={stock.ingredient_id} style={{ display: 'flex', flexDirection: 'column', marginBottom: '1em' }}>
                     <label style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', fontSize: '1em' }}>
                         <span style={{ marginRight: '1em', fontSize: '1.5em', textAlign: 'left' }}>{stock.ingredient_name}</span>
-                        <div style={{ flexShrink: 1, minWidth: '500px', height: '20px'}}>
+                        <div style={{ flexShrink: 1, minWidth: '200px', height: '20px' }}>
                             <ProgressBar style={{ height: '100%' }} now={stock.stock_level} label={`${stock.stock_level}%`} />
                         </div>
                     </label>
-                    {index !== stockData.length - 1 && <hr style={{ width: '100%', margin: '0.5em 0' }} />}
                 </div>
             ))}
 
