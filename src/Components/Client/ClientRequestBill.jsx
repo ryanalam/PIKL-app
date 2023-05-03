@@ -121,7 +121,7 @@ const Bill = () => {
             setWaiterName(data.waiter);
             setTotalAmount(data.total_amount);
             setItems(data.items);
-            console.log('TABLE:', tableNumber);
+            console.log("TABLE:", tableNumber);
           })
           .catch((error) => console.error(error));
       })
@@ -186,7 +186,8 @@ const Bill = () => {
 
       <div className='row'>
         <div className='col-6 text-left'>
-          <h4 className='font-weight-bold'>Total: {totalAmount} $</h4>
+        <h4 className='font-weight-bold'>Total: {Math.round(totalAmount * 100) / 100} $</h4>
+
         </div>
         <div className='col-6 text-right'>
           <button className='btn btn-primary' onClick={handleClick} disabled={disabled}>

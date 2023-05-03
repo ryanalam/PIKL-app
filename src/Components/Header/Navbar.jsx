@@ -40,7 +40,7 @@ const Navbar = ({ onUserTokenChange }) => {
   }
 
   const hideLogOutButton = () => {
-    const excludedPaths = ['/restlogin','/restmenu', '/restfoodmenu', '/restorders','/restvisits','/restreservations'];
+    const excludedPaths = ['/restlogin','/restmenu', '/restfoodmenu', '/restorders','/restvisits','/restreservations','/staffmenu','/staffinsights','/staffstock','/staffeditmenu','/staffemployees'];
     return !excludedPaths.includes(location.pathname);
   }
   
