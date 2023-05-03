@@ -14,7 +14,7 @@ function ClientMenu() {
     return (
         <>
 
-            <div onClick={() => { navigate("/clientdinein",{ state: { username: username } }) }} class="container dineinpicture">
+            <div onClick={() => { navigate("/qrcode",{ state: { username: username } }) }} class="container dineinpicture">
                 <center><h1>Dine-In</h1></center>
             </div>
 

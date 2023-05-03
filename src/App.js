@@ -5,6 +5,8 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter, Route, Routes} from "react-router-dom";
 import * as React from 'react';
 import { useState } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 // Client Imports
 import ClientLogin from './Components/Client/ClientLogin'
@@ -16,6 +18,8 @@ import ClientRequestCar from './Components/Client/ClientRequestCar';
 import ClientFoodMenu from './Components/Client/ClientFoodMenu';
 import ClientRequestBill from './Components/Client/ClientRequestBill'
 import ClientFeedback from './Components/Client/ClientFeedback'
+import Qrcode from './Components/Client/Qrcode';
+import PaymentButton from './Components/Client/PaymentButton';
 
 
 
@@ -34,6 +38,10 @@ import KitchenQueue from './Components/Kitchen/KitchenQueue';
 import StaffInsights from './Components/Staff/StaffInsights';
 import StaffMenu from './Components/Staff/StaffMenu';
 import StaffStock from './Components/Staff/StaffStock';
+import StaffEditMenu from './Components/Staff/StaffEditMenu';
+import StaffEmployees from './Components/Staff/StaffEmployees';
+
+
 import {  getUserToken } from './LocalStorage';
 import Protected from './Protected';
 
@@ -59,6 +67,7 @@ function App() {
                 
         />
       </header>
+      <ToastContainer />
     
         <Routes> 
           {/* All client Pages */}
@@ -71,6 +80,8 @@ function App() {
           <Route path='/clientfoodmenu' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientFoodMenu /></Protected>} />
           <Route path='clientrequestbill' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientRequestBill /></Protected>} />
           <Route path='clientfeedback' element={<Protected onUserTokenChange={handleUserTokenChange}><ClientFeedback /></Protected>} />
+          <Route path='qrcode' element={<Protected onUserTokenChange={handleUserTokenChange}><Qrcode /></Protected>} />
+          <Route path='paymentbutton' element={<Protected onUserTokenChange={handleUserTokenChange}><PaymentButton /></Protected>} />
           {/* All Restaurant Pages */}
           <Route path='/restlogin' element={<RestLogin/>}/>
           <Route path='/restmenu' element={<RestMenu/>}/>
@@ -87,6 +98,8 @@ function App() {
           <Route path = '/staffinsights' element={<StaffInsights/>}></Route>
           <Route path = '/staffmenu' element={<StaffMenu/>}></Route>
           <Route path = '/staffstock' element={<StaffStock/>}></Route>
+          <Route path = '/staffeditmenu' element={<StaffEditMenu/>}></Route>
+          <Route path = '/staffemployees' element={<StaffEmployees/>}></Route>
 
 
 

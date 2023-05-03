@@ -35,7 +35,7 @@ const Bill = () => {
       console.log('Sending request');
       await axios.post('http://localhost:3500/waiter_notifications', { tableNumber });
       console.log('Request sent successfully');
-      toast.success(`Table ${tableNumber} needs assistance!`);
+      toast.success(`Waiter Called`);
     } catch (error) {
       console.error(error);
     }
@@ -47,7 +47,7 @@ const Bill = () => {
     const cashOption = document.getElementById('cash');
     if (cashOption.checked) {
       handleClick();
-      toast.info('Waiter is on the way');
+      toast.success('Waiter is on the way to collect the bill');
     }
   };
 
