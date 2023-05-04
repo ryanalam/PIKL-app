@@ -124,7 +124,7 @@ function StaffEditMenu() {
           onChange={(e) => setFilters(e.target.value)}
         />
       </div>
-      <button className="btn btn-primary" onClick={handleSubmit}>
+      <button className="btn btn-primary mb-5" onClick={handleSubmit}>
 Add Item
 </button>
 </div>

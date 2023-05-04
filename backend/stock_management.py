@@ -1,4 +1,5 @@
 from flask import Blueprint
+from sqlalchemy import distinct
 from app import *
 from app import Ingredient, db
 
@@ -87,5 +88,100 @@ def add_stock():
     
     
     return jsonify({'message': 'Stock updated successfully.'}), 200
+
+def create_result_dict(keys, values):
+    return {key: value for key, value in zip(keys, values)}
+
+@app.route('/analytics', methods=['GET'])
+def customer_analytics():
+    try:
+        # Get the number of top customers to display
+        n = request.args.get('n', 10, type=int)
+        
+        # Validate input
+        if n < 1:
+            raise ValueError("Invalid value for 'n'. It should be a positive integer.")
+
+        # Top customers by amount spent
+        top_customers_by_amount_spent = db.session.query(
+            Customer.name, func.sum(Payment.amount)
+        ).join(Payment, Customer.id == Payment.customer_id).group_by(
+            Customer.name
+        ).order_by(
+            func.sum(Payment.amount).desc()
+        ).limit(n).all()
+
+        # Top customers by number of orders
+        # top_customers_by_order_count = db.session.query(
+        #     Customer.name, func.count(Orders.customer_id)
+        # ).join(Orders).group_by(
+        #     Customer.name
+        # ).order_by(
+        #     func.count(Orders.customer_id).desc()
+        # ).limit(n).all()
+        top_customers_by_order_count = db.session.query(
+        Customer.name, func.count(distinct(Orders.id))
+        ).join(Orders).group_by(
+            Customer.name
+        ).order_by(
+            func.count(distinct(Orders.id)).desc()
+        ).limit(n).all()
+
+        # Top customers by number of reservations
+        top_customers_by_reservation_count = db.session.query(
+            Customer.name, func.count(Reservation.customer_id)
+        ).join(Reservation).group_by(
+            Customer.name
+        ).order_by(
+            func.count(Reservation.customer_id).desc()
+        ).limit(n).all()
+
+        # Average amount spent per customer
+        avg_amount_spent_per_customer = db.session.query(func.avg(Payment.amount)).scalar()
+
+        # Average number of orders per customer
+        subquery_orders = db.session.query(func.count(distinct(Orders.id))).\
+                        join(Customer).group_by(Customer.id).subquery()
+        avg_orders_per_customer = db.session.query(func.avg(subquery_orders)).scalar()
+
+
+        # Average number of reservations per customer
+        subquery_reservations = db.session.query(func.count(Reservation.customer_id)).\
+                                join(Customer).group_by(Customer.id).subquery()
+        avg_reservations_per_customer = db.session.query(func.avg(subquery_reservations)).scalar()
+
+        # Most popular items by sales
+        most_popular_items_by_sales = db.session.query(Item.name, func.sum(Item.price * Orders.quantity)).\
+            join(Orders).group_by(Item.name).order_by(func.sum(Item.price * Orders.quantity).desc()).limit(n).all()
+
+        # Most popular items by quantity
+        most_popular_items_by_quantity = db.session.query(Item.name, func.sum(Orders.quantity)).\
+            join(Orders).group_by(Item.name).order_by(func.sum(Orders.quantity).desc()).limit(n).all()
+
+        # Sales by day
+        sales_by_day = db.session.query(Date.date, func.sum(Payment.amount)).\
+            select_from(Payment).join(Date, Payment.date == Date.date).\
+            group_by(Date.date).order_by(Date.date).all()
+
+        # Top waiters by number of orders taken
+        top_waiters_by_orders = db.session.query(Waiter.name, func.count(distinct(Orders.id))).\
+                join(Orders).group_by(Waiter.name).order_by(func.count(distinct(Orders.id)).desc()).limit(n).all()
+
+        results = {
+            'top_customers_by_amount_spent': [create_result_dict(['name', 'amount_spent'], row) for row in top_customers_by_amount_spent],
+            'top_customers_by_order_count': [create_result_dict(['name', 'order_count'], row) for row in top_customers_by_order_count],
+            'top_customers_by_reservation_count': [create_result_dict(['name', 'reservation_count'], row) for row in top_customers_by_reservation_count],
+            'average_amount_spent_per_customer': avg_amount_spent_per_customer,
+            'average_orders_per_customer': avg_orders_per_customer,
+            'average_reservations_per_customer': avg_reservations_per_customer,
+            'most_popular_items_by_sales': [create_result_dict(['name', 'sales'], row) for row in most_popular_items_by_sales],
+            'most_popular_items_by_quantity': [create_result_dict(['name', 'quantity'], row) for row in most_popular_items_by_quantity],
+            'sales_by_day': [create_result_dict(['date', 'sales'], (date.isoformat(), sales)) for date, sales in sales_by_day],
+            'top_waiters_by_orders': [create_result_dict(['name', 'order_count'], row) for row in top_waiters_by_orders],
+            # Additional analytics results
+            }
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 

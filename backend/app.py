@@ -611,7 +611,7 @@ def call_waiter():
 def waiter_notifications():
     table_number = request.json.get('tableNumber')
     if table_number is not None:
-        new_notif = Notif(table_id=table_number, customer_id=1, time=datetime.datetime.now())
+        new_notif = Notif(table_id=table_number, customer_id=1, time=datetime.now())
         db.session.add(new_notif)
         db.session.commit()
     return {}
@@ -619,7 +619,7 @@ def waiter_notifications():
  
 @app.route('/waiter_notifications', methods=['GET'])
 def get_waiter_notifications():
-    oldest_allowed_time = datetime.datetime.now() - datetime.timedelta(minutes=30)
+    oldest_allowed_time = datetime.now() - timedelta(minutes=30)
     notifs = Notif.query.filter(Notif.time > oldest_allowed_time).all()
     if notifs:
         table_number = notifs[0].table_id

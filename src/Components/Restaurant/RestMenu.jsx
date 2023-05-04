@@ -13,8 +13,8 @@ function ClientLogin() {
       <ToastContainer />
     </>
             <div class="container-sm">
-                <div onClick={() => { navigate("/restreservations") }} class="container reservations">
-                    <center><h1>Reservations</h1></center>
+            <div onClick={() => { navigate("/restvisits") }} class="container visits">
+                    <center><h1>Visits</h1></center>
                 </div>
 
                 <br></br>
@@ -31,11 +31,15 @@ function ClientLogin() {
 
                 <br></br>
 
-                <div onClick={() => { navigate("/restvisits") }} class="container visits">
-                    <center><h1>Visits</h1></center>
+                <div onClick={() => { navigate("/restreservations") }} class="container reservations">
+                    <center><h1>Reservations</h1></center>
                 </div>
 
                 <br></br>
+
+
+
+
 
             </div>
 

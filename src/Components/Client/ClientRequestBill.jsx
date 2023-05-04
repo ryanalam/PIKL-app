@@ -4,6 +4,8 @@ import { getUserToken } from '../../LocalStorage';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './ClientDineIn.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoneyBill, faCreditCard } from '@fortawesome/free-solid-svg-icons';
 
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -190,7 +192,7 @@ const Bill = () => {
 
         </div>
         <div className='col-6 text-right'>
-          <button className='btn btn-primary' onClick={handleClick} disabled={disabled}>
+          <button className='btn border-primary' onClick={handleClick} disabled={disabled}>
             {isLoading ? 'Calling Waiter...' : 'Call Waiter'}</button>
         </div>
       </div>
@@ -206,15 +208,15 @@ const Bill = () => {
           <h6 className='font-weight-bold'>Payment Method</h6>
           <div className='form-check'>
             <input className='form-check-input' type='radio' name='paymentMethod' id='cash' value='cash' />
-            <label className='form-check-label' htmlFor='cash'>
-              Cash
-            </label>
+            <label className="form-check-label">
+                <FontAwesomeIcon icon={faMoneyBill} className="icon" /> Cash
+              </label>
           </div>
           <div className='form-check'>
             <input className='form-check-input' type='radio' name='paymentMethod' id='visa' value='visa' />
-            <label className='form-check-label' htmlFor='visa'>
-              Visa
-            </label>
+            <label className="form-check-label">
+                <FontAwesomeIcon icon={faCreditCard} className="icon" /> Visa
+              </label>
           </div>
           <br></br>
         </div>

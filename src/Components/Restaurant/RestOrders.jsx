@@ -2,13 +2,20 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import ToastContainer from './RestNotification';
 import { Drawer } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 
 const SERVER_URL = "http://127.0.0.1:3500";
 
 function RestOrders() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [deleteStatus, setDeleteStatus] = useState(null);
   const [menuList, setMenuList] = useState([]);
+
+  const handleRefreshPage = () => {
+    window.location.reload();
+  };
 
 
   useEffect(() => {
@@ -40,8 +47,29 @@ function RestOrders() {
     setSelectedOrder(order);
   };
 
+
   const handleDeleteClick = (order) => {
-    // TODO: handle delete click
+    const requestOptions = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: order.id })
+    };
+    fetch(`${SERVER_URL}/delete_order`, requestOptions)
+      .then(response => {
+        if (response.ok) {
+          setDeleteStatus({ message: `Deleting Order #${order.id}`, type: 'success' });
+          setSelectedOrder(null);
+          setTimeout(() => {
+            window.location.reload();
+            return false;
+          }, 3000);
+        } else if (response.status === 400) {
+          setDeleteStatus({ message: `Order #${order.id} cannot be deleted because it has a status of 1.`, type: 'error' });
+        } else {
+          setDeleteStatus({ message: `Order #${order.id} not found.`, type: 'error' });
+        }
+      })
+      .catch(error => console.log(error));
   };
 
   const renderOrders = () => {
@@ -85,6 +113,28 @@ function RestOrders() {
 
   return (
     <>
+      <div className='container-sm'>
+        <h2>All orders</h2>
+        <br></br>
+        <button className='btn btn-primary' onClick={handleRefreshPage}>
+          <FontAwesomeIcon icon={faRefresh} className="icon" />
+        </button>
+      </div>
+
+      <hr></hr>
+
+      {deleteStatus && (
+        <div className={`alert alert-${deleteStatus.type}`} role="alert">
+          <div>
+            {deleteStatus.message}
+          </div>
+          <br></br>
+          <div class="spinner-border text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+      )}
       <ToastContainer />
       <div className="row">
         {renderOrders()}
@@ -120,22 +170,9 @@ function RestOrders() {
           )}
         </div>
         <div className='container-sm'>
-          <div>
-            <select class="form-select" aria-label="Default select example">
-              <option selected>Choose item to add</option>
-              {menuList.map(item => (
-                <option value={item.id}>{item.name}</option>
-              ))}
-            </select>
-
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" placeholder="Quantity" min="0" aria-label="Recipient's username" aria-describedby="button-addon2" />
-              <button class="btn btn-outline-success" type="button" id="button-addon2">Add item</button>
-            </div>
-          </div>
-          <center><button className='btn btn-primary mb-1'>Submit</button></center>
+          <center><button className='btn btn-primary'>Submit</button></center>
           <hr></hr>
-          <center><button className='btn btn-danger mb'>Delete order</button></center>
+          <center><button className='btn btn-danger' onClick={() => handleDeleteClick(selectedOrder)}>Delete order</button></center>
         </div>
         <br></br>
       </Drawer>

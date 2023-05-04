@@ -518,6 +518,22 @@ def get_customer_info():
     'waiter_id': waiter_id,
     'table_id': table_id
     }
-
-
     return jsonify(response)
+
+@app.route('/delete_order', methods=['DELETE'])
+def delete_orders():
+    order_id = request.json['order_id']
+
+    orders_to_delete = Orders.query.filter_by(id=order_id).all()
+
+    if not orders_to_delete:
+        return jsonify({'message': 'No orders found with the given order_id.'}), 404
+
+    for order in orders_to_delete:
+        if order.status == 1:
+            return jsonify({'message': 'Orders with status = 1 cannot be deleted.'}), 400
+        db.session.delete(order)
+
+    db.session.commit()
+
+    return jsonify({'message': f'All orders with order_id {order_id} have been deleted.'}), 200
