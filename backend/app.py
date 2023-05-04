@@ -10,7 +10,7 @@ from jwt.exceptions import InvalidTokenError
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
-import datetime
+from datetime import datetime, timedelta
 from dateutil import parser as dateparser
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
@@ -214,6 +214,11 @@ class Visit(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=True)
     table_id = db.Column(db.Integer, db.ForeignKey('tables.id'), nullable=False)
     time = db.Column(db.DateTime, nullable=False)
+
+class Valet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    car_number = db.Column(db.Integer, nullable=False)
+    time = db.Column(db.DateTime, nullable=False)
     
     
 
@@ -231,30 +236,6 @@ s = URLSafeTimedSerializer("Thisisasecret!")
 
 dict = {}
 
-
-
-#APIS
-
-# Customer signup endpoint
-# @app.route('/customer_signup', methods=['POST'])
-# def customer_signup():
-#     username=request.json['username']
-#     password=request.json['password']
-#     name=request.json['name']
-#     email=request.json['email']
-#     phone=request.json['phone']
-    
-#     if not username or not password or not name or not email or not phone:
-#        return jsonify({'message': 'Please fill in all fields'}), 400
-#     customer = Customer.query.filter_by(username=username).first()
-#     if customer:
-#       return jsonify({'message': 'Username already exists'}), 400
-#     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-#     new_customer = Customer(username=username, password=hashed_password, name=name, email=email, phone=phone)
-#     db.session.add(new_customer)
-#     db.session.commit()
-#     access_token = create_access_token(identity=username)
-#     return jsonify({'access_token': access_token}), 201
 
 if __name__ == '__main__':
     
@@ -310,85 +291,6 @@ def waiter_login():
       access_token = create_access_token(identity=waiter.id)
       return jsonify({'access_token': access_token}), 200
     return jsonify({'message': 'Invalid username or password'}), 400
-
-# @app.route('/new_reservation', methods=['POST'])
-# def new_reservation():
-#     table_id=request.json['table_id']
-#     start=request.json['start_time']
-#     start_time=dateparser.parse(start)
-#     end_time=start_time+datetime.timedelta(hours=2)
-#     number_of_people=request.json['number_of_people']
-    
-#     reservation = Reservation(None, table_id, start_time, end_time, number_of_people)
-    
-#     token = extract_auth_token(request)
-#     if token != None:
-#         try:
-#             userid = decode_token(token)
-#         except jwt.ExpiredSignatureError as error:
-#             abort(403)
-#         except jwt.InvalidTokenError as error:
-#             abort(403)
-#         reservation.customer_id = userid
-
-    
-#     if not customer_id or not table_id or not start_time or not end_time or not number_of_people:
-#        return jsonify({'message': 'Please fill in all fields'}), 400
-#     if table_status == 1:
-#       return jsonify({'message': 'Table is already reserved'}), 400
-#     new_reservation = Reservation(customer_id=customer_id, table_id=table_id, date_id=date_id, number_of_people=number_of_people)
-#     db.session.add(new_reservation)
-#     db.session.commit()
-#     return jsonify({'message': 'Reservation created successfully'}), 201
-
-
-
-# @app.route('/new_reservation_app', methods=['POST'])
-# def new_reservation_app():
-#     table_id=request.json['table_id']
-#     start=request.json['start_time']
-#     start_time=dateparser.parse(start)
-#     end_time=start_time+datetime.timedelta(hours=2)
-#     number_of_people=request.json['number_of_people']
-    
-#     reservation = Reservation(None, table_id, start_time, end_time, number_of_people, None)
-    
-    
-#     token = request.headers.get('Authorization').split(' ')[1]
-#     # if token:
-#     #     try:
-#     #         userid = decode_token(token)
-#     #     # except jwt.ExpiredSignatureError as error:
-#     #     #     abort(403)
-#     #     except jwt.InvalidTokenError as error:
-#     #         abort(403)
-#     #     reservation.customer_id = userid
-    
-#     if token:
-#         userid = decode_token(token)
-#         reservation.customer_id = userid['sub']
-
-#     #customer_id or not
-#     if not table_id or not start_time or not end_time or not number_of_people:
-#        return jsonify({'message': 'Please fill in all fields'}), 400
-   
-#         # Check if table is available during the reservation time
-#     table = Tables.query.get(table_id)
-#     # if not table.is_available:
-#     #     return jsonify({'message': 'Table is not available.'}), 400
-#     overlapping_reservations = Reservation.query.filter(
-#         Reservation.table_id == table_id,
-#         Reservation.start_time < end_time,
-#         Reservation.end_time > start_time
-#     ).all()
-#     if overlapping_reservations:
-#         return jsonify({'message': 'Table is already reserved during this time.'}), 400
- 
-#     new_reservation = Reservation(customer_id=reservation.customer_id, table_id=table_id,number_of_people=number_of_people, start_time=start_time, end_time=end_time)
-#     db.session.add(new_reservation)
-#     db.session.commit()
-#     return jsonify({'message': 'Reservation created successfully'}), 201
-
 
 
 
@@ -558,6 +460,24 @@ def new_reservation_phone():
     db.session.add(new_reservation)
     db.session.commit()
     return jsonify({'message': 'Reservation created successfully'}), 201
+    
+
+@app.route('/get_reservations', methods=['GET'])
+def get_reservations():
+    reservations = Reservation.query.all()
+    result = []
+    for reservation in reservations:
+        data = {
+            'id': reservation.id,
+            'customer_id': reservation.customer_id,
+            'table_id': reservation.table_id,
+            'start_time': reservation.start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': reservation.end_time.strftime('%Y-%m-%d %H:%M:%S') if reservation.end_time else None,
+            'number_of_people': reservation.number_of_people,
+            'customer_name': reservation.customer_name,
+        }
+        result.append(data)
+    return jsonify(result)
 
 
 
@@ -725,6 +645,37 @@ def decode_waiter():
     except:
         return jsonify({'message': 'Please login'}), 400
     return jsonify({'waiter_id': query}), 200
+
+
+@app.route('/valet_create_request', methods=['POST'])
+def create_request():
+    if request.method == 'POST':
+        data = request.get_json()
+        if 'car_number' not in data:
+            return {'error': 'car_number is required'}, 400
+        
+        # create a new request object
+        new_request = Valet(car_number=data['car_number'], time=datetime.now())
+        db.session.add(new_request)
+        db.session.commit()
+        
+        return {'id': new_request.id, 'car_number': new_request.car_number, 'time': new_request.time}, 201
+    else:
+        return {'error': 'Invalid request method'}, 405
+
+
+@app.route('/valet_get_car_requests', methods=['GET'])
+def get_car_requests():
+    requests = Valet.query.all()
+    return jsonify([{'id': request.id, 'car_number': request.car_number} for request in requests])
+
+
+@app.route('/valet_delete_request/<int:request_id>', methods=['DELETE'])
+def delete_request(request_id):
+    request = Valet.query.get(request_id)
+    db.session.delete(request)
+    db.session.commit()
+    return {'message': 'Request deleted'}
 
 from stock_management import stock_management
 from order import order
