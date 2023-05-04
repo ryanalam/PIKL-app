@@ -14,7 +14,7 @@ const RequestCar = () => {
   };
 
   const handleOrderCarClick = async () => {
-    const confirm = window.confirm('Are you sure this is your ticket number?');
+    const confirm = window.confirm(ticketNumberInput + "\n" + 'Are you sure this is your ticket number?');
     if (confirm) {
       setIsHidden(false);
       setIsShown(true);
